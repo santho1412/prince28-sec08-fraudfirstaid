@@ -1,3 +1,4 @@
+
 [project]
 name = "fraudfirstaid"
 version = "0.1.0"
@@ -13,6 +14,7 @@ dependencies = [
     "uvicorn[standard]>=0.54.0",
 ]
 
+[project.scripts]
 fraudfirstaid = "fraudfirstaid:main"
 
 [build-system]
@@ -26,3 +28,15 @@ dev = [
     "pytest>=9.2.0",
     "ruff>=0.17.5",
 ]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore:Using `httpx` with `starlette.testclient`"]

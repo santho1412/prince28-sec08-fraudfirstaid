@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 docs = Path("docs")
@@ -49,9 +48,7 @@ questions_file = docs / "DISCOVERY_QUESTIONS.md"
 if questions_file.exists():
     lines = questions_file.read_text(encoding="utf-8").splitlines()
     questions = [
-        line for line in lines
-        if line.strip() and line.strip()[0].isdigit()
-        and ". " in line
+        line for line in lines if line.strip() and line.strip()[0].isdigit() and ". " in line
     ]
 
     print(f"\nDiscovery questions: {len(questions)}/10")
@@ -59,5 +56,4 @@ if questions_file.exists():
     if len(questions) != 10:
         all_passed = False
 
-print("\nSTEP 2 DOCUMENTATION:",
-      "PASSED" if all_passed else "NEEDS FIXING")
+print("\nSTEP 2 DOCUMENTATION:", "PASSED" if all_passed else "NEEDS FIXING")

@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 project_card = """# FraudFirstAid – Project Card

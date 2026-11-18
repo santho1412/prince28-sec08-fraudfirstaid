@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 questions = [
@@ -11,7 +10,7 @@ questions = [
     "How should users receive bank account and payment safety guidance?",
     "How can the application provide accurate reporting deadlines?",
     "Should the application support multiple languages in future versions?",
-    "How can we ensure that the information provided is reliable, secure, and regularly updated?"
+    "How can we ensure that the information provided is reliable, secure, and regularly updated?",
 ]
 
 # Create docs directory
