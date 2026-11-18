@@ -1,0 +1,28 @@
+[project]
+name = "fraudfirstaid"
+version = "0.1.0"
+description = "Evidence-based cyber fraud emergency response and reporting guidance for India."
+readme = "README.md"
+authors = [
+    { name = "veeran", email = "imveeran11@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.163.2",
+    "pydantic-settings>=2.16.3",
+    "uvicorn[standard]>=0.54.0",
+]
+
+fraudfirstaid = "fraudfirstaid:main"
+
+[build-system]
+requires = ["uv_build>=0.13.8,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pre-commit>=4.7.0",
+    "pytest>=9.2.0",
+    "ruff>=0.17.5",
+]
