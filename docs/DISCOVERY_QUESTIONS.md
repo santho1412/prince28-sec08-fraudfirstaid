@@ -19,4 +19,3 @@
 9. Should the application support multiple languages in future versions?
 
 10. How can we ensure that the information provided is reliable, secure, and regularly updated?
-

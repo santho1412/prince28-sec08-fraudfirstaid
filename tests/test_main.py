@@ -1,84 +1,193 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from fraudfirstaid.main import create_app
 
 
-def test_home_and_health(tmp_path):
+@pytest.fixture
+def client(tmp_path):
     app = create_app(tmp_path / "test.db")
 
-    with TestClient(app) as client:
-        assert client.get("/").status_code == 200
-        assert client.get("/health").json()["status"] == "healthy"
+    with TestClient(app) as test_client:
+        yield test_client
 
 
-def test_create_and_read_incident(tmp_path):
-    app = create_app(tmp_path / "test.db")
+def test_home(client):
+    response = client.get("/")
 
-    with TestClient(app) as client:
-        response = client.post(
-            "/api/incidents",
-            json={
-                "incident_type": "upi",
-                "description": "I noticed an unauthorised UPI transaction.",
-                "amount_lost": 1500,
-            },
-        )
-
-        assert response.status_code == 201
-        incident_id = response.json()["id"]
-
-        detail = client.get(f"/api/incidents/{incident_id}")
-        assert detail.status_code == 200
-        assert detail.json()["incident_type"] == "upi"
+    assert response.status_code == 200
+    assert response.json()["name"] == "FraudFirstAid"
 
 
-def test_invalid_incident_is_rejected(tmp_path):
-    app = create_app(tmp_path / "test.db")
+def test_health(client):
+    response = client.get("/health")
 
-    with TestClient(app) as client:
-        response = client.post(
-            "/api/incidents",
-            json={
-                "incident_type": "upi",
-                "description": "short",
-            },
-        )
-
-        assert response.status_code == 422
+    assert response.status_code == 200
+    assert response.json() == {"status": "healthy"}
 
 
-def test_guidance_and_resources(tmp_path):
-    app = create_app(tmp_path / "test.db")
+def test_resources(client):
+    response = client.get("/api/resources")
 
-    with TestClient(app) as client:
-        guidance = client.get("/api/guidance/upi")
-        resources = client.get("/api/resources")
-        checklist = client.get("/api/evidence-checklist")
-
-        assert guidance.status_code == 200
-        assert len(guidance.json()["steps"]) > 0
-        assert resources.json()["financial_cyber_fraud_helpline"] == "1930"
-        assert len(checklist.json()["checklist"]) > 0
+    assert response.status_code == 200
+    assert response.json()["financial_cyber_fraud_helpline"] == "1930"
 
 
-def test_update_incident_status(tmp_path):
-    app = create_app(tmp_path / "test.db")
+@pytest.mark.parametrize(
+    "incident_type",
+    [
+        "upi",
+        "bank_transfer",
+        "card",
+        "phishing",
+        "social_engineering",
+        "identity_theft",
+        "social_media",
+        "other",
+    ],
+)
+def test_all_guidance_types(client, incident_type):
+    response = client.get(f"/api/guidance/{incident_type}")
 
-    with TestClient(app) as client:
-        created = client.post(
-            "/api/incidents",
-            json={
-                "incident_type": "phishing",
-                "description": "I entered my details on a suspicious website.",
-            },
-        )
+    assert response.status_code == 200
+    assert response.json()["incident_type"] == incident_type
+    assert len(response.json()["steps"]) > 0
 
-        incident_id = created.json()["id"]
 
-        updated = client.patch(
-            f"/api/incidents/{incident_id}/status",
-            json={"status": "reported"},
-        )
+def test_invalid_guidance_type(client):
+    response = client.get("/api/guidance/invalid")
 
-        assert updated.status_code == 200
-        assert updated.json()["status"] == "reported"
+    assert response.status_code == 422
+
+
+def test_evidence_checklist(client):
+    response = client.get("/api/evidence-checklist")
+
+    assert response.status_code == 200
+    assert len(response.json()["checklist"]) > 0
+
+
+def test_create_incident(client):
+    response = client.post(
+        "/api/incidents",
+        json={
+            "incident_type": "upi",
+            "description": "I noticed an unauthorized UPI transaction.",
+            "amount_lost": 1500,
+        },
+    )
+
+    assert response.status_code == 201
+    assert response.json()["incident_type"] == "upi"
+    assert response.json()["status"] == "new"
+
+
+def test_create_incident_validation(client):
+    response = client.post(
+        "/api/incidents",
+        json={
+            "incident_type": "upi",
+            "description": "short",
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_create_incident_invalid_type(client):
+    response = client.post(
+        "/api/incidents",
+        json={
+            "incident_type": "unknown",
+            "description": "This is a valid length description.",
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_list_incidents(client):
+    client.post(
+        "/api/incidents",
+        json={
+            "incident_type": "phishing",
+            "description": "I entered my details on a suspicious website.",
+        },
+    )
+
+    response = client.get("/api/incidents")
+
+    assert response.status_code == 200
+    assert response.json()["count"] == 1
+
+
+def test_get_incident_not_found(client):
+    response = client.get("/api/incidents/unknown-id")
+
+    assert response.status_code == 404
+
+
+def test_update_incident_status(client):
+    created = client.post(
+        "/api/incidents",
+        json={
+            "incident_type": "upi",
+            "description": "An unauthorized UPI transaction occurred.",
+        },
+    )
+
+    incident_id = created.json()["id"]
+
+    updated = client.patch(
+        f"/api/incidents/{incident_id}/status",
+        json={"status": "reported"},
+    )
+
+    assert updated.status_code == 200
+    assert updated.json()["status"] == "reported"
+
+
+def test_update_missing_incident(client):
+    response = client.patch(
+        "/api/incidents/unknown-id/status",
+        json={"status": "reported"},
+    )
+
+    assert response.status_code == 404
+
+
+def test_invalid_status(client):
+    created = client.post(
+        "/api/incidents",
+        json={
+            "incident_type": "upi",
+            "description": "An unauthorized UPI transaction occurred.",
+        },
+    )
+
+    incident_id = created.json()["id"]
+
+    response = client.patch(
+        f"/api/incidents/{incident_id}/status",
+        json={"status": "invalid"},
+    )
+
+    assert response.status_code == 422
+
+
+def test_incident_statistics(client):
+    response = client.post(
+        "/api/incidents",
+        json={
+            "incident_type": "upi",
+            "description": "An unauthorized UPI transaction occurred.",
+        },
+    )
+
+    assert response.status_code == 201
+
+    stats = client.get("/api/stats")
+
+    assert stats.status_code == 200
+    assert stats.json()["total_incidents"] == 1
+    assert stats.json()["by_status"]["new"] == 1
