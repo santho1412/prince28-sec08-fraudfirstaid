@@ -3,6 +3,7 @@
 from http import HTTPStatus
 
 from fastapi import Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -44,6 +45,21 @@ async def http_exception_handler(
         status=exc.status_code,
         title=HTTPStatus(exc.status_code).phrase,
         detail=str(exc.detail),
+        instance=request.url.path,
+        request_id=getattr(request.state, "request_id", None),
+    )
+
+
+async def validation_exception_handler(
+    request: Request,
+    exc: RequestValidationError,
+) -> JSONResponse:
+    """Convert request validation errors into Problem Details."""
+
+    return problem_response(
+        status=422,
+        title="Unprocessable Entity",
+        detail="The request contains invalid or missing fields.",
         instance=request.url.path,
         request_id=getattr(request.state, "request_id", None),
     )
