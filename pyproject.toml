@@ -1,24 +1,17 @@
-
 [project]
 name = "fraudfirstaid"
 version = "0.1.0"
-description = "Evidence-based cyber fraud emergency response and reporting guidance for India."
+description = "An emergency response and reporting assistance platform for victims of cyber fraud in India."
 readme = "README.md"
-authors = [
-    { name = "veeran", email = "imveeran11@gmail.com" }
-]
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi>=0.163.2",
+    "fastapi>=0.165.0",
     "pydantic-settings>=2.16.3",
     "uvicorn[standard]>=0.54.0",
 ]
 
-[project.scripts]
-fraudfirstaid = "fraudfirstaid:main"
-
 [build-system]
-requires = ["uv_build>=0.13.8,<0.14.0"]
+requires = ["uv_build>=0.8.0,<0.9.0"]
 build-backend = "uv_build"
 
 [dependency-groups]
@@ -27,26 +20,4 @@ dev = [
     "pre-commit>=4.7.0",
     "pytest>=9.2.0",
     "ruff>=0.17.5",
-    "pip-audit",
-    "bandit",
-    "detect-secrets>=1.5.0",
 ]
-
-[tool.ruff]
-line-length = 100
-target-version = "py312"
-src = ["src", "tests"]
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "B", "UP", "SIM"]
-
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"]
-python_functions = ["test_*"]
-addopts = "-q"
-filterwarnings = ["ignore:Using `httpx` with `starlette.testclient`"]
