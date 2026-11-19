@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class RequestContextMiddleware:
-    """Attach a unique request ID and measure request duration."""
+    """Attach a request ID and measure request duration."""
 
     def __init__(self, app: ASGIApp) -> None:
         self.app = app
@@ -26,31 +26,34 @@ class RequestContextMiddleware:
             await self.app(scope, receive, send)
             return
 
-        request_id = uuid.uuid4().hex
+        headers = dict(scope.get("headers", []))
+        supplied_request_id = headers.get(b"x-request-id")
+
+        request_id = (
+            supplied_request_id.decode("latin-1") if supplied_request_id else uuid.uuid4().hex
+        )
+
         scope.setdefault("state", {})["request_id"] = request_id
         start_time = time.perf_counter()
 
         async def send_with_headers(message: Message) -> None:
             if message["type"] == "http.response.start":
-                headers = MutableHeaders(scope=message)
-                headers["X-Request-ID"] = request_id
-                headers["X-Process-Time"] = f"{time.perf_counter() - start_time:.6f}"
+                response_headers = MutableHeaders(scope=message)
+                response_headers["X-Request-ID"] = request_id
+                response_headers["X-Process-Time"] = f"{time.perf_counter() - start_time:.6f}"
 
             await send(message)
 
         try:
             await self.app(scope, receive, send_with_headers)
-        except Exception:
-            logger.exception(
-                "unhandled request error",
-                extra={"request_id": request_id},
-            )
-            raise
         finally:
             logger.info(
                 "request completed",
                 extra={
                     "request_id": request_id,
-                    "duration_seconds": round(time.perf_counter() - start_time, 6),
+                    "duration_seconds": round(
+                        time.perf_counter() - start_time,
+                        6,
+                    ),
                 },
             )

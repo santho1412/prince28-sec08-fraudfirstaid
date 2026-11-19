@@ -11,14 +11,29 @@ router = APIRouter(prefix="/v1/documents", tags=["documents"])
 async def list_documents(
     store: StoreDep,
     limit: int = Query(default=100, ge=1, le=500),
+    q: str | None = Query(default=None, min_length=1),
 ) -> dict[str, object]:
-    """Return a limited list of documents."""
+    """Return documents with optional search and pagination."""
 
-    records = store.list_records(limit=limit)
+    records = store.list_records(limit=500)
+
+    if q:
+        search_term = q.casefold()
+        records = [
+            record
+            for record in records
+            if any(search_term in str(value).casefold() for value in record.values())
+        ]
+
+    total = len(records)
+    items = records[:limit]
 
     return {
-        "count": len(records),
-        "documents": records,
+        "total": total,
+        "items": items,
+        # Keep the existing response keys for compatibility.
+        "count": len(items),
+        "documents": items,
     }
 
 
@@ -28,7 +43,6 @@ async def get_document(
     store: StoreDep,
 ) -> dict[str, object]:
     """Return one document by its ID."""
-
     record = store.get_record(document_id)
 
     if record is None:

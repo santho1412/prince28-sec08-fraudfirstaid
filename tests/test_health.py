@@ -34,7 +34,8 @@ def test_ready_returns_ready_when_records_exist() -> None:
     response = client.get("/ready")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ready"}
+    assert response.json()["status"] == "ready"
+    assert response.json()["checks"]["records_loaded"] is True
 
 
 def test_ready_returns_503_when_no_records_exist() -> None:
@@ -44,4 +45,5 @@ def test_ready_returns_503_when_no_records_exist() -> None:
     response = client.get("/ready")
 
     assert response.status_code == 503
-    assert response.json() == {"status": "not_ready"}
+    assert response.json()["status"] == "not_ready"
+    assert response.json()["checks"]["records_loaded"] is False

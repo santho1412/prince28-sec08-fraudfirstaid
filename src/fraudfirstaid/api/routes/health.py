@@ -13,15 +13,21 @@ async def health() -> dict[str, str]:
 
 
 @router.get("/ready", response_model=None)
-async def ready(request: Request) -> JSONResponse | dict[str, str]:
+async def ready(request: Request) -> JSONResponse | dict[str, object]:
     """Check whether the application is ready to serve requests."""
-
     store = getattr(request.app.state, "store", None)
+    records_loaded = store is not None and bool(store.records)
 
-    if store is None or not store.records:
+    if not records_loaded:
         return JSONResponse(
             status_code=503,
-            content={"status": "not_ready"},
+            content={
+                "status": "not_ready",
+                "checks": {"records_loaded": False},
+            },
         )
 
-    return {"status": "ready"}
+    return {
+        "status": "ready",
+        "checks": {"records_loaded": True},
+    }
