@@ -14,6 +14,11 @@ All records are based on publicly available government sources.
 | 008 | RBI | https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12702 |
 | 009 | RBI | https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12032 |
 | 010 | RBI | https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=11040 |
+| 011 | CERT-In | https://www.cert-in.org.in/PDF/CERT-In_Directions_70B_28.04.2022.pdf |
+| 012 | CERT-In | https://www.cert-in.org.in/PDF/FAQs_on_CyberSecurityDirections_May2022.pdf |
+| 013 | I4C | https://cybercrime.gov.in/UploadMedia/MHA-CitizenManualReportOtherCyberCrime-v10.pdf |
+| 014 | Department of Telecommunications | https://www.pib.gov.in/PressReleasePage.aspx?PRID=2011488&lang=2&reg=48 |
+| 015 | RBI | https://www.rbi.org.in/Scripts/FAQDisplay.aspx?Id=153 |
 
 ## Data handling rules
 

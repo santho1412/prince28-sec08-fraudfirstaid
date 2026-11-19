@@ -98,5 +98,55 @@
   "topic": "Customer protection framework explaining the allocation and limits of customer liability in unauthorised electronic banking transactions.",
   "scam_type": "Unauthorised electronic banking transactions",
   "deadline_days": null
+},
+    {
+  "id": "011",
+  "issuer": "CERT-In",
+  "doc_type": "Directions",
+  "number": "No. 20(3)/2022-CERT-In",
+  "date": "2022-04-28",
+  "topic": "Directions under Section 70B of the Information Technology Act, 2000 covering information security practices, incident prevention, response and reporting. Specified cyber incidents must be reported by covered entities within six hours.",
+  "scam_type": "Cybersecurity incidents, ransomware and data breaches",
+  "deadline_days": null
+},
+  {
+  "id": "012",
+  "issuer": "CERT-In",
+  "doc_type": "FAQ",
+  "number": null,
+  "date": null,
+  "topic": "Frequently asked questions explaining CERT-In's Cyber Security Directions dated 28 April 2022, including incident reporting requirements and clarification for covered entities.",
+  "scam_type": "Cybersecurity incidents and incident reporting",
+  "deadline_days": null
+},
+  {
+    "id": "013",
+    "issuer": "Indian Cyber Crime Coordination Centre",
+    "doc_type": "Citizen Manual",
+    "number": null,
+    "date": null,
+    "topic": "Official National Cybercrime Reporting Portal manual explaining how citizens can report online financial fraud and other cybercrime complaints.",
+    "scam_type": "UPI, card, wallet and online banking fraud",
+    "deadline_days": null
+  },
+  {
+  "id": "014",
+  "issuer": "Department of Telecommunications",
+  "doc_type": "Press Release",
+  "number": null,
+  "date": "2024-03-05",
+  "topic": "Launch of the Chakshu facility on Sanchar Saathi for citizens to report suspected fraudulent communications, including calls, SMS and WhatsApp messages.",
+  "scam_type": "Telecom impersonation and suspected fraud communications",
+  "deadline_days": null
+},
+  {
+  "id": "015",
+  "issuer": "Reserve Bank of India",
+  "doc_type": "FAQ",
+  "number": null,
+  "date": "2026-07-01",
+  "topic": "Frequently asked questions about the Reserve Bank Integrated Ombudsman Scheme, 2026, including complaint submission, eligible entities and appeal procedures.",
+  "scam_type": "Banking grievances and financial fraud complaints",
+  "deadline_days": null
 }
 ]
