@@ -1,24 +1,52 @@
-
 [
   {
     "id": "001",
-    "title": "UPI Payment Fraud",
-    "category": "UPI Fraud",
-    "description": "A sample case involving an unauthorized UPI transaction.",
-    "status": "reported"
+    "issuer": "Reserve Bank of India",
+    "doc_type": "Amendment Directions",
+    "number": null,
+    "date": "2026-06-24",
+    "topic": "Revised framework for customer protection and limiting liability in fraudulent electronic banking transactions.",
+    "scam_type": "Unauthorised electronic banking transactions",
+    "deadline_days": null
   },
   {
     "id": "002",
-    "title": "Phishing Link Fraud",
-    "category": "Phishing",
-    "description": "A sample case involving a suspicious link requesting banking credentials.",
-    "status": "under_review"
+    "issuer": "Reserve Bank of India",
+    "doc_type": "Scheme",
+    "number": "RB-IOS, 2026",
+    "date": "2026-01-16",
+    "topic": "Integrated grievance redress mechanism for complaints involving deficiency in services by covered regulated entities. Effective from 2026-07-01. Appeal against an eligible award is generally within 30 days.",
+    "scam_type": "Banking grievance and financial fraud complaints",
+    "deadline_days": 30
   },
   {
     "id": "003",
-    "title": "Online Shopping Fraud",
-    "category": "Shopping Fraud",
-    "description": "A sample case involving payment for goods that were never delivered.",
-    "status": "reported"
+    "issuer": "Indian Cyber Crime Coordination Centre",
+    "doc_type": "Advisory",
+    "number": null,
+    "date": "2025-03-06",
+    "topic": "Official advisory explaining digital arrest based cybercrime and related intimidation tactics.",
+    "scam_type": "Digital arrest and impersonation fraud",
+    "deadline_days": null
+  },
+  {
+    "id": "004",
+    "issuer": "CERT-In",
+    "doc_type": "Cybersecurity Advisory",
+    "number": "CIAD-2025-0019",
+    "date": "2025-05-10",
+    "topic": "Essential measures for industry to safeguard business operations against cybersecurity threats.",
+    "scam_type": "Ransomware, malware, data breaches and cyberattacks",
+    "deadline_days": null
+  },
+  {
+    "id": "005",
+    "issuer": "Department of Telecommunications",
+    "doc_type": "Citizen Guidance",
+    "number": null,
+    "date": null,
+    "topic": "Sanchar Saathi Chakshu facility for reporting suspected fraudulent calls, SMS and WhatsApp communications.",
+    "scam_type": "Telecom impersonation and suspected fraud communications",
+    "deadline_days": null
   }
 ]
