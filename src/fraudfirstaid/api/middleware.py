@@ -15,7 +15,7 @@ class RequestMiddleware(BaseHTTPMiddleware):
     """Add request IDs, measure duration, and handle unexpected errors."""
 
     async def dispatch(self, request: Request, call_next):
-        request_id = uuid4().hex
+        request_id = request.headers.get("X-Request-ID") or uuid4().hex
         request.state.request_id = request_id
         start_time = time.perf_counter()
 
@@ -43,7 +43,10 @@ class RequestMiddleware(BaseHTTPMiddleware):
                 },
             )
 
-        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        duration_ms = round(
+            (time.perf_counter() - start_time) * 1000,
+            2,
+        )
 
         response.headers["X-Request-ID"] = request_id
 

@@ -11,7 +11,7 @@ router = APIRouter(tags=["Health"])
 @router.get("/health")
 def health():
     """Check whether the application is running."""
-    return {"status": "healthy"}
+    return {"status": "ok"}
 
 
 @router.get("/ready")
@@ -27,5 +27,7 @@ def readiness(
 
     return {
         "status": "ready",
-        "records": len(store.records),
+        "checks": {
+            "records_loaded": True,
+        },
     }

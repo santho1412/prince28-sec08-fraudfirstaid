@@ -1,4 +1,4 @@
-"""Document listing and retrieval endpoints."""
+"""Document listing, searching, and retrieval endpoints."""
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
@@ -11,13 +11,26 @@ router = APIRouter(prefix="/v1/documents", tags=["Documents"])
 @router.get("")
 def list_documents(
     limit: int = Query(default=100, ge=1, le=100),
+    q: str | None = Query(default=None),
     store: RecordStore = Depends(get_record_store),  # noqa: B008
 ):
-    """List available documents."""
-    records = store.list_records(limit)
+    """List and search documents with pagination."""
+    records = store.records
+
+    if q:
+        search_term = q.casefold()
+        records = [
+            record
+            for record in records
+            if search_term in " ".join(str(value) for value in record.values()).casefold()
+        ]
+
+    total = len(records)
+    items = records[:limit]
+
     return {
-        "count": len(records),
-        "documents": records,
+        "total": total,
+        "items": items,
     }
 
 
