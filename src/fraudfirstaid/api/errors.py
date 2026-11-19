@@ -14,6 +14,7 @@ def problem_response(
     detail: str,
     instance: str,
     request_id: str | None = None,
+    errors: list[dict[str, str]] | None = None,
 ) -> JSONResponse:
     """Build a standard Problem Details response."""
 
@@ -27,6 +28,9 @@ def problem_response(
 
     if request_id:
         content["request_id"] = request_id
+
+    if errors is not None:
+        content["errors"] = errors
 
     return JSONResponse(
         status_code=status,
@@ -56,10 +60,19 @@ async def validation_exception_handler(
 ) -> JSONResponse:
     """Convert request validation errors into Problem Details."""
 
+    errors = [
+        {
+            "field": ".".join(str(part) for part in error["loc"]),
+            "message": error["msg"],
+        }
+        for error in exc.errors()
+    ]
+
     return problem_response(
         status=422,
         title="Unprocessable Entity",
         detail="The request contains invalid or missing fields.",
         instance=request.url.path,
         request_id=getattr(request.state, "request_id", None),
+        errors=errors,
     )

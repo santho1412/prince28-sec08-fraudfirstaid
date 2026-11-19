@@ -43,10 +43,13 @@ def test_list_documents() -> None:
     client = create_test_client()
 
     response = client.get("/v1/documents")
+    body = response.json()
 
     assert response.status_code == 200
-    assert response.json()["count"] == 3
-    assert len(response.json()["documents"]) == 3
+    assert body["total"] == 3
+    assert len(body["items"]) == 3
+    assert body["count"] == 3
+    assert len(body["documents"]) == 3
 
 
 def test_list_documents_with_limit() -> None:
@@ -54,9 +57,22 @@ def test_list_documents_with_limit() -> None:
     client = create_test_client()
 
     response = client.get("/v1/documents?limit=2")
+    body = response.json()
 
     assert response.status_code == 200
-    assert response.json()["count"] == 2
+    assert body["total"] == 3
+    assert len(body["items"]) == 2
+    assert body["count"] == 2
+
+
+def test_search_documents() -> None:
+    """Document search should filter records by text."""
+    client = create_test_client()
+
+    response = client.get("/v1/documents?q=phishing")
+
+    assert response.status_code == 200
+    assert [record["id"] for record in response.json()["items"]] == ["DOC002"]
 
 
 def test_get_existing_document() -> None:
