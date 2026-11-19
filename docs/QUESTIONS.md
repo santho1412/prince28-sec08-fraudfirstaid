@@ -23,9 +23,10 @@ How can a victim submit a financial cybercrime complaint through the National Cy
 
 Why should a victim immediately inform their bank about a suspicious or fraudulent transaction?
 
-## 6. Customer liability
 
-How does RBI customer-liability guidance determine a customer's responsibility for an unauthorised electronic banking transaction?
+## 6. Unanswerable question
+
+What was the exact password used by the victim when registering their bank account?
 
 ## 7. Reporting deadlines
 
