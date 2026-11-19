@@ -148,5 +148,55 @@
   "topic": "Frequently asked questions about the Reserve Bank Integrated Ombudsman Scheme, 2026, including complaint submission, eligible entities and appeal procedures.",
   "scam_type": "Banking grievances and financial fraud complaints",
   "deadline_days": null
-}
+},
+  {
+    "id": "016",
+    "issuer": "Reserve Bank of India",
+    "doc_type": "Circular",
+    "number": "RBI/2018-19/101",
+    "date": "2019-01-04",
+    "topic": "Customer protection framework limiting liability for unauthorised electronic payment transactions involving prepaid payment instruments issued by authorised non-bank issuers.",
+    "scam_type": "Unauthorised prepaid wallet and PPI transactions",
+    "deadline_days": null
+  },
+  {
+    "id": "017",
+    "issuer": "Reserve Bank of India",
+    "doc_type": "Circular",
+    "number": "RBI/2020-21/21",
+    "date": "2020-08-06",
+    "topic": "Requires authorised payment system operators and participants to establish online dispute resolution systems for customer disputes and grievances involving digital payments, initially including failed transactions.",
+    "scam_type": "Digital payment disputes and failed transactions",
+    "deadline_days": null
+  },
+  {
+    "id": "018",
+    "issuer": "Reserve Bank of India",
+    "doc_type": "Circular",
+    "number": "RBI/2019-20/67",
+    "date": "2019-09-20",
+    "topic": "Establishes turnaround times for reversing failed transactions and compensation for delays across authorised payment systems.",
+    "scam_type": "Failed UPI, card, ATM and electronic payment transactions",
+    "deadline_days": null
+  },
+  {
+    "id": "019",
+    "issuer": "Reserve Bank of India",
+    "doc_type": "Circular",
+    "number": "RBI/2017-18/109",
+    "date": "2017-12-14",
+    "topic": "Customer protection framework limiting liability for unauthorised electronic banking transactions involving primary urban, state and district central co-operative banks.",
+    "scam_type": "Unauthorised electronic banking transactions at co-operative banks",
+    "deadline_days": null
+  },
+  {
+    "id": "020",
+    "issuer": "Reserve Bank of India",
+    "doc_type": "Scheme Notification",
+    "number": "CEPD. PRD. No.S873/13.01.001/2021-22",
+    "date": "2021-11-12",
+    "topic": "Historical Reserve Bank Integrated Ombudsman Scheme, 2021, establishing a cost-free grievance redress mechanism for customers of covered regulated entities. Replaced by the 2026 scheme from July 1, 2026.",
+    "scam_type": "Banking, NBFC and digital payment service grievances",
+    "deadline_days": null
+  }
 ]
