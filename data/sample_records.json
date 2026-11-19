@@ -1,0 +1,20 @@
+[
+  {
+    "id": "001",
+    "title": "UPI Payment Fraud",
+    "category": "upi",
+    "description": "Guidance for responding to suspicious UPI transactions."
+  },
+  {
+    "id": "002",
+    "title": "Phishing Message",
+    "category": "phishing",
+    "description": "Guidance for identifying and reporting phishing messages."
+  },
+  {
+    "id": "003",
+    "title": "Bank Transfer Fraud",
+    "category": "bank_transfer",
+    "description": "Guidance for responding to unauthorised bank transfers."
+  }
+]
