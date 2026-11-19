@@ -55,7 +55,7 @@
     "doc_type": "Amendment Directions",
     "number": "RBI/2026-27/169",
     "date": "2026-06-24",
-    "topic": "Revised instructions on limiting customer liability in unauthorised electronic banking transactions for Payments Banks.",
+    "topic": "Second Amendment to the Payments Banks Responsible Business Conduct Directions, 2026. Revises instructions on limiting customer liability in unauthorised electronic banking transactions; applies to transactions on or after 2027-01-01.",
     "scam_type": "Unauthorised electronic banking transactions",
     "deadline_days": null
   },
@@ -70,34 +70,33 @@
     "deadline_days": null
   },
   {
-    "id": "008",
-    "issuer": "Reserve Bank of India",
-    "doc_type": "Master Directions",
-    "number": "RBI/DOS/2024-25/118",
-    "date": "2024-07-15",
-    "topic": "Framework for prevention, early detection and timely reporting of fraud by commercial banks and All India Financial Institutions.",
-    "scam_type": "Banking and financial fraud",
-    "deadline_days": null
-  },
+  "id": "008",
+  "issuer": "Reserve Bank of India",
+  "doc_type": "Master Directions",
+  "number": "RBI/DOS/2024-25/118",
+  "date": "2024-07-15",
+  "topic": "Framework for prevention, early detection and timely reporting of fraud by commercial banks, including Regional Rural Banks, and All India Financial Institutions.",
+  "scam_type": "Banking and financial fraud",
+  "deadline_days": null
+},
   {
-    "id": "009",
-    "issuer": "Reserve Bank of India",
-    "doc_type": "Master Direction",
-    "number": "RBI/2020-21/74",
-    "date": "2021-02-18",
-    "topic": "Security controls and governance requirements for digital payment products and services.",
-    "scam_type": "Digital payment security fraud",
-    "deadline_days": null
-  },
+  "id": "009",
+  "issuer": "Reserve Bank of India",
+  "doc_type": "Master Direction",
+  "number": "RBI/2020-21/74",
+  "date": "2021-02-18",
+  "topic": "Historical digital payment security controls direction. RBI lists this direction among circulars to be repealed or withdrawn; do not treat it as current guidance.",
+  "scam_type": "Digital payment security fraud",
+  "deadline_days": null
+},
   {
-    "id": "010",
-    "issuer": "Reserve Bank of India",
-    "doc_type": "FAQ",
-    "number": null,
-    "date": "2025-04-22",
-    "topic": "Frequently asked questions clarifying fraud classification and reporting requirements for regulated entities.",
-    "scam_type": "Banking and financial fraud",
-    "deadline_days": null
-  }
-
+  "id": "010",
+  "issuer": "Reserve Bank of India",
+  "doc_type": "Circular",
+  "number": "RBI/2017-18/15",
+  "date": "2017-07-06",
+  "topic": "Customer protection framework explaining the allocation and limits of customer liability in unauthorised electronic banking transactions.",
+  "scam_type": "Unauthorised electronic banking transactions",
+  "deadline_days": null
+}
 ]
