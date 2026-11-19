@@ -15,7 +15,14 @@ class JsonFormatter(logging.Formatter):
             "msg": record.getMessage(),
         }
 
-        for key in ("request_id", "records", "method", "path", "status_code", "duration_ms"):
+        for key in (
+            "request_id",
+            "records",
+            "method",
+            "path",
+            "status_code",
+            "duration_ms",
+        ):
             if hasattr(record, key):
                 log_data[key] = getattr(record, key)
 
@@ -27,7 +34,6 @@ class JsonFormatter(logging.Formatter):
 
 def setup_logging(log_level: str = "INFO") -> None:
     """Configure the root logger with the JSON formatter."""
-
     handler = logging.StreamHandler()
     handler.setFormatter(JsonFormatter())
 

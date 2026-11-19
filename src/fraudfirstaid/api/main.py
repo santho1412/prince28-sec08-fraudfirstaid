@@ -18,13 +18,13 @@ def create_app(settings=None) -> FastAPI:
         settings = get_app_settings()
 
     setup_logging(settings.log_level)
-
     store = RecordStore(settings.data_file)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         if store.data_file.exists():
             store.load()
+
         app.state.record_store = store
         yield
 
@@ -36,7 +36,6 @@ def create_app(settings=None) -> FastAPI:
     )
 
     install_error_handlers(app)
-
     app.add_middleware(RequestMiddleware)
 
     app.include_router(health.router)
