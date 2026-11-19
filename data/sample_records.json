@@ -1,0 +1,24 @@
+
+[
+  {
+    "id": "001",
+    "title": "UPI Payment Fraud",
+    "category": "UPI Fraud",
+    "description": "A sample case involving an unauthorized UPI transaction.",
+    "status": "reported"
+  },
+  {
+    "id": "002",
+    "title": "Phishing Link Fraud",
+    "category": "Phishing",
+    "description": "A sample case involving a suspicious link requesting banking credentials.",
+    "status": "under_review"
+  },
+  {
+    "id": "003",
+    "title": "Online Shopping Fraud",
+    "category": "Shopping Fraud",
+    "description": "A sample case involving payment for goods that were never delivered.",
+    "status": "reported"
+  }
+]
