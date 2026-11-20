@@ -1,4 +1,6 @@
-﻿# FraudFirstAid — Day 6 Notes
+﻿# FraudFirstAid — Project Notes
+
+## Day 6 Notes
 
 ## 1. Database migration evidence
 
@@ -114,3 +116,118 @@ The table currently contains only 20 documents. Reading the entire table is chea
 As the table grows and the metadata filter becomes selective enough, PostgreSQL may choose the GIN index because it can reduce the number of rows that need to be read.
 
 Disabling sequential scans demonstrates that the GIN index `ix_documents_metadata_gin` is available and can be used.
+
+---
+
+## Day 4 — Dockerization
+
+## 4. Multi-stage Docker image
+
+Created a root-level `Dockerfile` using:
+
+- Python 3.12 slim as the base image.
+- uv for dependency installation.
+- A separate builder stage and runtime stage.
+- A non-root `app` user.
+- Uvicorn as the application server.
+- Port 8000 exposed for the API.
+
+The runtime image copies the Alembic migration directory from `alembic/`, along with the application runtime dependencies, scripts, and data.
+
+## 5. Docker build evidence
+
+Built the application image:
+
+```powershell
+docker build -t fraudfirstaid:dev .
+```
+
+Image:
+
+```text
+fraudfirstaid:dev
+```
+
+Reported Docker image size:
+
+```text
+301MB
+```
+
+The image is below the 400 MB target.
+
+## 6. Non-root user verification
+
+Command:
+
+```powershell
+docker run --rm fraudfirstaid:dev id
+```
+
+Expected identity:
+
+```text
+uid=999(app) gid=999(app) groups=999(app)
+```
+
+The container runs as the non-root `app` user rather than root.
+
+## 7. Docker build cache verification
+
+Temporarily changed the application factory docstring in:
+
+```text
+src/fraudfirstaid/api/main.py
+```
+
+Rebuilt the image after the source change.
+
+The dependency installation layer was reported as:
+
+```text
+CACHED
+```
+
+This confirms that changing application source code does not unnecessarily reinstall dependencies.
+
+### Cache verification rebuild time
+
+```text
+19.6 seconds
+```
+
+### Initial build timing
+
+The successful initial build duration was not captured.
+
+The first recorded build attempt took 30.7 seconds but failed because of an incorrect migration-directory path. This was corrected from `migrations/` to `alembic/`, and the README exclusion was also corrected before the successful build.
+
+## 8. Docker ignore configuration
+
+Created `.dockerignore` to exclude unnecessary files and directories, including:
+
+- Git metadata.
+- Python cache files.
+- Local virtual environments.
+- Environment secrets.
+- Test files and coverage output.
+- IDE configuration.
+- Temporary files.
+
+`README.md` is intentionally included in the Docker build context because the project build backend requires it when building the package.
+
+## 9. Cache-test cleanup
+
+Restored:
+
+```text
+src/fraudfirstaid/api/main.py
+```
+
+to its original application factory docstring:
+
+```python
+"""Create and configure the FastAPI application."""
+```
+
+The temporary cache-test modification was removed after verification.
