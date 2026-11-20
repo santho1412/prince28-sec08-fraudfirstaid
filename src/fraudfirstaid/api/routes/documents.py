@@ -1,49 +1,62 @@
 """Document retrieval endpoints."""
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 
-from fraudfirstaid.api.deps import StoreDep
+from fraudfirstaid.api.deps import DocumentRepositoryDep
+from fraudfirstaid.db.repository import FILTER_KEY
 
 router = APIRouter(prefix="/v1/documents", tags=["documents"])
 
 
 @router.get("")
 async def list_documents(
-    store: StoreDep,
+    request: Request,
+    repository: DocumentRepositoryDep,
     limit: int = Query(default=100, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
     q: str | None = Query(default=None, min_length=1),
 ) -> dict[str, object]:
-    """Return documents with optional search and pagination."""
+    """Return documents with optional search, filters, and pagination."""
 
-    records = store.list_records(limit=500)
+    reserved_parameters = {"limit", "offset", "q"}
+    filters: dict[str, str] = {}
 
-    if q:
-        search_term = q.casefold()
-        records = [
-            record
-            for record in records
-            if any(search_term in str(value).casefold() for value in record.values())
-        ]
+    for key, value in request.query_params.items():
+        if key in reserved_parameters:
+            continue
 
-    total = len(records)
-    items = records[:limit]
+        if not FILTER_KEY.fullmatch(key):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid filter name: '{key}'.",
+            )
+
+        filters[key] = value
+
+    total, items = await repository.list(
+        q=q,
+        filters=filters,
+        limit=limit,
+        offset=offset,
+    )
 
     return {
         "total": total,
         "items": items,
-        # Keep the existing response keys for compatibility.
         "count": len(items),
         "documents": items,
+        "filters": filters,
     }
 
 
 @router.get("/{document_id}")
 async def get_document(
     document_id: str,
-    store: StoreDep,
+    repository: DocumentRepositoryDep,
 ) -> dict[str, object]:
     """Return one document by its ID."""
-    record = store.get_record(document_id)
+
+    record = await repository.get(document_id)
 
     if record is None:
         raise HTTPException(

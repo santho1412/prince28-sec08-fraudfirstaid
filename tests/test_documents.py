@@ -1,33 +1,62 @@
 """Tests for document retrieval endpoints."""
 
-from types import SimpleNamespace
-
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from fraudfirstaid.api.deps import get_document_repository
 from fraudfirstaid.api.errors import http_exception_handler
 from fraudfirstaid.api.routes.documents import router as documents_router
 
 SAMPLE_RECORDS = [
-    {"id": "DOC001", "title": "UPI Fraud"},
-    {"id": "DOC002", "title": "Phishing"},
-    {"id": "DOC003", "title": "Identity Theft"},
+    {"id": "DOC001", "title": "UPI Fraud", "issuer": "RBI"},
+    {"id": "DOC002", "title": "Phishing", "issuer": "CERT-In"},
+    {"id": "DOC003", "title": "Identity Theft", "issuer": "RBI"},
 ]
 
 
+class FakeDocumentRepository:
+    """In-memory repository for endpoint tests."""
+
+    async def list(
+        self,
+        *,
+        q: str | None,
+        filters: dict[str, str],
+        limit: int,
+        offset: int,
+    ) -> tuple[int, list[dict]]:
+        records = SAMPLE_RECORDS.copy()
+
+        if q:
+            records = [
+                record
+                for record in records
+                if any(q.casefold() in str(value).casefold() for value in record.values())
+            ]
+
+        for key, value in filters.items():
+            records = [
+                record
+                for record in records
+                if str(record.get(key, "")).casefold() == value.casefold()
+            ]
+
+        total = len(records)
+        return total, records[offset : offset + limit]
+
+    async def get(self, external_id: str) -> dict | None:
+        return next(
+            (record for record in SAMPLE_RECORDS if record["id"] == external_id),
+            None,
+        )
+
+
 def create_test_client() -> TestClient:
-    """Create a test client with sample document records."""
+    """Create a test client with a fake repository."""
     app = FastAPI()
 
-    app.state.store = SimpleNamespace(
-        records=SAMPLE_RECORDS,
-        list_records=lambda limit=100: SAMPLE_RECORDS[:limit],
-        get_record=lambda record_id: next(
-            (record for record in SAMPLE_RECORDS if record["id"] == record_id),
-            None,
-        ),
-    )
+    app.dependency_overrides[get_document_repository] = FakeDocumentRepository
 
     app.add_exception_handler(
         StarletteHTTPException,
@@ -39,7 +68,6 @@ def create_test_client() -> TestClient:
 
 
 def test_list_documents() -> None:
-    """Document listing should return all sample records."""
     client = create_test_client()
 
     response = client.get("/v1/documents")
@@ -53,7 +81,6 @@ def test_list_documents() -> None:
 
 
 def test_list_documents_with_limit() -> None:
-    """Document listing should respect the requested limit."""
     client = create_test_client()
 
     response = client.get("/v1/documents?limit=2")
@@ -66,7 +93,6 @@ def test_list_documents_with_limit() -> None:
 
 
 def test_search_documents() -> None:
-    """Document search should filter records by text."""
     client = create_test_client()
 
     response = client.get("/v1/documents?q=phishing")
@@ -75,8 +101,29 @@ def test_search_documents() -> None:
     assert [record["id"] for record in response.json()["items"]] == ["DOC002"]
 
 
+def test_filter_documents() -> None:
+    client = create_test_client()
+
+    response = client.get("/v1/documents?issuer=RBI")
+
+    assert response.status_code == 200
+    assert [record["id"] for record in response.json()["items"]] == [
+        "DOC001",
+        "DOC003",
+    ]
+    assert response.json()["filters"] == {"issuer": "RBI"}
+
+
+def test_invalid_filter_name() -> None:
+    client = create_test_client()
+
+    response = client.get("/v1/documents?Bad-Name=1")
+
+    assert response.status_code == 400
+    assert response.headers["content-type"].startswith("application/problem+json")
+
+
 def test_get_existing_document() -> None:
-    """An existing document should be returned successfully."""
     client = create_test_client()
 
     response = client.get("/v1/documents/DOC001")
@@ -86,7 +133,6 @@ def test_get_existing_document() -> None:
 
 
 def test_get_missing_document() -> None:
-    """A missing document should return a Problem Details response."""
     client = create_test_client()
 
     response = client.get("/v1/documents/UNKNOWN")

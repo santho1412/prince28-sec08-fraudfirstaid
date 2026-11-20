@@ -1,11 +1,15 @@
 """Integration tests for the Fraud First Aid API."""
 
+from collections.abc import AsyncGenerator
+
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
+from sqlalchemy.exc import SQLAlchemyError
 
 from fraudfirstaid.api.main import create_app
 from fraudfirstaid.config import Settings
+from fraudfirstaid.db.session import get_db
 
 
 def test_health_is_ok(client: TestClient) -> None:
@@ -15,26 +19,38 @@ def test_health_is_ok(client: TestClient) -> None:
     assert response.json()["status"] == "ok"
 
 
-def test_ready_when_records_loaded(client: TestClient) -> None:
+def test_ready_when_database_is_available(client: TestClient) -> None:
     response = client.get("/ready")
 
     assert response.status_code == 200
-    assert response.json()["checks"]["records_loaded"] is True
+    assert response.json() == {
+        "status": "ready",
+        "checks": {"database": True},
+    }
 
 
-def test_ready_is_503_when_data_file_missing(tmp_path) -> None:
-    settings = Settings(
-        app_env="ci",
-        data_file=tmp_path / "missing.json",
-    )
+def test_ready_is_503_when_database_is_unavailable() -> None:
+    app = create_app(Settings(app_env="ci"))
 
-    with TestClient(create_app(settings)) as test_client:
+    async def override_get_db() -> AsyncGenerator:
+        class UnavailableSession:
+            async def execute(self, statement: object) -> None:
+                raise SQLAlchemyError("Database unavailable")
+
+        yield UnavailableSession()
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    with TestClient(app) as test_client:
         health_response = test_client.get("/health")
         ready_response = test_client.get("/ready")
 
     assert health_response.status_code == 200
     assert ready_response.status_code == 503
-    assert ready_response.json()["checks"]["records_loaded"] is False
+    assert ready_response.json() == {
+        "status": "not_ready",
+        "checks": {"database": False},
+    }
 
 
 def test_list_documents_paginates(client: TestClient) -> None:
@@ -44,6 +60,7 @@ def test_list_documents_paginates(client: TestClient) -> None:
     assert response.status_code == 200
     assert body["total"] == 3
     assert len(body["items"]) == 2
+    assert body["count"] == 2
 
 
 def test_search_filters_records(client: TestClient) -> None:

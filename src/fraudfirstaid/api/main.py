@@ -15,8 +15,8 @@ from fraudfirstaid.api.middleware import RequestContextMiddleware
 from fraudfirstaid.api.routes.documents import router as documents_router
 from fraudfirstaid.api.routes.health import router as health_router
 from fraudfirstaid.config import Settings, get_settings
+from fraudfirstaid.db.session import engine
 from fraudfirstaid.logging_setup import setup_logging
-from fraudfirstaid.store import RecordStore
 
 logger = logging.getLogger(__name__)
 
@@ -29,16 +29,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     setup_logging(settings.log_level)
 
-    store = RecordStore(settings.data_file)
-
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        try:
-            store.load()
-        except (OSError, ValueError):
-            logger.exception("Could not load records file")
-        app.state.store = store
+        """Manage the database engine lifecycle."""
+        logger.info("Starting application")
         yield
+        await engine.dispose()
+        logger.info("Database engine disposed")
 
     app = FastAPI(
         title=settings.app_name,
@@ -46,10 +43,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
 
     app.add_middleware(RequestContextMiddleware)
+
     app.add_exception_handler(
         StarletteHTTPException,
         http_exception_handler,
     )
+
     app.add_exception_handler(
         RequestValidationError,
         validation_exception_handler,

@@ -2,14 +2,23 @@
 
 from typing import Annotated
 
-from fastapi import Depends, Request
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from fraudfirstaid.store import RecordStore
+from fraudfirstaid.db.repository import DocumentRepository
+from fraudfirstaid.db.session import get_db
+
+DbSessionDep = Annotated[AsyncSession, Depends(get_db)]
 
 
-def get_store(request: Request) -> RecordStore:
-    """Return the application record store."""
-    return request.app.state.store
+def get_document_repository(
+    session: DbSessionDep,
+) -> DocumentRepository:
+    """Create a document repository for the current request."""
+    return DocumentRepository(session)
 
 
-StoreDep = Annotated[RecordStore, Depends(get_store)]
+DocumentRepositoryDep = Annotated[
+    DocumentRepository,
+    Depends(get_document_repository),
+]
