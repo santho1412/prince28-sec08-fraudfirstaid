@@ -15,13 +15,10 @@ class Settings(BaseSettings):
     )
 
     app_name: str = "fraudfirstaid"
-
-    # No default: the application must explicitly define APP_ENV.
     app_env: Literal["local", "ci", "production"]
-
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
-
     data_file: Path = Path("data/sample_records.json")
+    database_url: str | None = None
 
 
 @lru_cache

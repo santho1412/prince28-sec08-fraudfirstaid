@@ -7,7 +7,8 @@
     "date": "2026-06-24",
     "topic": "Revised framework for customer protection and limiting liability in fraudulent electronic banking transactions.",
     "scam_type": "Unauthorised electronic banking transactions",
-    "deadline_days": null
+    "deadline_days": null,
+    "source_url": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63011"
   },
   {
     "id": "002",
@@ -17,7 +18,8 @@
     "date": "2026-01-16",
     "topic": "Integrated grievance redress mechanism for complaints involving deficiency in services by covered regulated entities. Effective from 2026-07-01. Appeal against an eligible award is generally within 30 days.",
     "scam_type": "Banking grievance and financial fraud complaints",
-    "deadline_days": 30
+    "deadline_days": 30,
+    "source_url": "https://www.rbi.org.in/Scripts/FS_PressRelease.aspx?prid=62052"
   },
   {
     "id": "003",
@@ -27,7 +29,8 @@
     "date": "2025-03-06",
     "topic": "Official advisory explaining digital arrest based cybercrime and related intimidation tactics.",
     "scam_type": "Digital arrest and impersonation fraud",
-    "deadline_days": null
+    "deadline_days": null,
+    "source_url": "https://cybercrime.gov.in/pdf/Advisories/ADVISORYTAU-ADV-003DigitalArrest06.03.2025.pdf"
   },
   {
     "id": "004",
@@ -37,7 +40,8 @@
     "date": "2025-05-10",
     "topic": "Essential measures for industry to safeguard business operations against cybersecurity threats.",
     "scam_type": "Ransomware, malware, data breaches and cyberattacks",
-    "deadline_days": null
+    "deadline_days": null,
+    "source_url": "https://www.cert-in.org.in/s2cMainServlet?VLCODE=CIAD-2025-0019&pageid=PUBVLNOTES02"
   },
   {
     "id": "005",
@@ -47,7 +51,8 @@
     "date": null,
     "topic": "Sanchar Saathi Chakshu facility for reporting suspected fraudulent calls, SMS and WhatsApp communications.",
     "scam_type": "Telecom impersonation and suspected fraud communications",
-    "deadline_days": null
+    "deadline_days": null,
+    "source_url": "https://www.sancharsaathi.gov.in/"
   },
   {
     "id": "006",
@@ -57,7 +62,8 @@
     "date": "2026-06-24",
     "topic": "Second Amendment to the Payments Banks Responsible Business Conduct Directions, 2026. Revises instructions on limiting customer liability in unauthorised electronic banking transactions; applies to transactions on or after 2027-01-01.",
     "scam_type": "Unauthorised electronic banking transactions",
-    "deadline_days": null
+    "deadline_days": null,
+    "source_url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=13545"
   },
   {
     "id": "007",
@@ -67,58 +73,64 @@
     "date": "2025-09-25",
     "topic": "Framework for authentication mechanisms in digital payment transactions, including additional authentication and risk-based checks.",
     "scam_type": "Digital payment and card fraud",
-    "deadline_days": null
+    "deadline_days": null,
+    "source_url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12898"
   },
   {
-  "id": "008",
-  "issuer": "Reserve Bank of India",
-  "doc_type": "Master Directions",
-  "number": "RBI/DOS/2024-25/118",
-  "date": "2024-07-15",
-  "topic": "Framework for prevention, early detection and timely reporting of fraud by commercial banks, including Regional Rural Banks, and All India Financial Institutions.",
-  "scam_type": "Banking and financial fraud",
-  "deadline_days": null
-},
+    "id": "008",
+    "issuer": "Reserve Bank of India",
+    "doc_type": "Master Directions",
+    "number": "RBI/DOS/2024-25/118",
+    "date": "2024-07-15",
+    "topic": "Framework for prevention, early detection and timely reporting of fraud by commercial banks, including Regional Rural Banks, and All India Financial Institutions.",
+    "scam_type": "Banking and financial fraud",
+    "deadline_days": null,
+    "source_url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12702"
+  },
   {
-  "id": "009",
-  "issuer": "Reserve Bank of India",
-  "doc_type": "Master Direction",
-  "number": "RBI/2020-21/74",
-  "date": "2021-02-18",
-  "topic": "Historical digital payment security controls direction. RBI lists this direction among circulars to be repealed or withdrawn; do not treat it as current guidance.",
-  "scam_type": "Digital payment security fraud",
-  "deadline_days": null
-},
+    "id": "009",
+    "issuer": "Reserve Bank of India",
+    "doc_type": "Master Direction",
+    "number": "RBI/2020-21/74",
+    "date": "2021-02-18",
+    "topic": "Historical digital payment security controls direction. RBI lists this direction among circulars to be repealed or withdrawn; do not treat it as current guidance.",
+    "scam_type": "Digital payment security fraud",
+    "deadline_days": null,
+    "source_url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12032"
+  },
   {
-  "id": "010",
-  "issuer": "Reserve Bank of India",
-  "doc_type": "Circular",
-  "number": "RBI/2017-18/15",
-  "date": "2017-07-06",
-  "topic": "Customer protection framework explaining the allocation and limits of customer liability in unauthorised electronic banking transactions.",
-  "scam_type": "Unauthorised electronic banking transactions",
-  "deadline_days": null
-},
-    {
-  "id": "011",
-  "issuer": "CERT-In",
-  "doc_type": "Directions",
-  "number": "No. 20(3)/2022-CERT-In",
-  "date": "2022-04-28",
-  "topic": "Directions under Section 70B of the Information Technology Act, 2000 covering information security practices, incident prevention, response and reporting. Specified cyber incidents must be reported by covered entities within six hours.",
-  "scam_type": "Cybersecurity incidents, ransomware and data breaches",
-  "deadline_days": null
-},
+    "id": "010",
+    "issuer": "Reserve Bank of India",
+    "doc_type": "Circular",
+    "number": "RBI/2017-18/15",
+    "date": "2017-07-06",
+    "topic": "Customer protection framework explaining the allocation and limits of customer liability in unauthorised electronic banking transactions.",
+    "scam_type": "Unauthorised electronic banking transactions",
+    "deadline_days": null,
+    "source_url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=11040"
+  },
   {
-  "id": "012",
-  "issuer": "CERT-In",
-  "doc_type": "FAQ",
-  "number": null,
-  "date": null,
-  "topic": "Frequently asked questions explaining CERT-In's Cyber Security Directions dated 28 April 2022, including incident reporting requirements and clarification for covered entities.",
-  "scam_type": "Cybersecurity incidents and incident reporting",
-  "deadline_days": null
-},
+    "id": "011",
+    "issuer": "CERT-In",
+    "doc_type": "Directions",
+    "number": "No. 20(3)/2022-CERT-In",
+    "date": "2022-04-28",
+    "topic": "Directions under Section 70B of the Information Technology Act, 2000 covering information security practices, incident prevention, response and reporting. Specified cyber incidents must be reported by covered entities within six hours.",
+    "scam_type": "Cybersecurity incidents, ransomware and data breaches",
+    "deadline_days": null,
+    "source_url": "https://www.cert-in.org.in/PDF/CERT-In_Directions_70B_28.04.2022.pdf"
+  },
+  {
+    "id": "012",
+    "issuer": "CERT-In",
+    "doc_type": "FAQ",
+    "number": null,
+    "date": null,
+    "topic": "Frequently asked questions explaining CERT-In's Cyber Security Directions dated 28 April 2022, including incident reporting requirements and clarification for covered entities.",
+    "scam_type": "Cybersecurity incidents and incident reporting",
+    "deadline_days": null,
+    "source_url": "https://www.cert-in.org.in/PDF/FAQs_on_CyberSecurityDirections_May2022.pdf"
+  },
   {
     "id": "013",
     "issuer": "Indian Cyber Crime Coordination Centre",
@@ -127,28 +139,31 @@
     "date": null,
     "topic": "Official National Cybercrime Reporting Portal manual explaining how citizens can report online financial fraud and other cybercrime complaints.",
     "scam_type": "UPI, card, wallet and online banking fraud",
-    "deadline_days": null
+    "deadline_days": null,
+    "source_url": "https://cybercrime.gov.in/UploadMedia/MHA-CitizenManualReportOtherCyberCrime-v10.pdf"
   },
   {
-  "id": "014",
-  "issuer": "Department of Telecommunications",
-  "doc_type": "Press Release",
-  "number": null,
-  "date": "2024-03-05",
-  "topic": "Launch of the Chakshu facility on Sanchar Saathi for citizens to report suspected fraudulent communications, including calls, SMS and WhatsApp messages.",
-  "scam_type": "Telecom impersonation and suspected fraud communications",
-  "deadline_days": null
-},
+    "id": "014",
+    "issuer": "Department of Telecommunications",
+    "doc_type": "Press Release",
+    "number": null,
+    "date": "2024-03-05",
+    "topic": "Launch of the Chakshu facility on Sanchar Saathi for citizens to report suspected fraudulent communications, including calls, SMS and WhatsApp messages.",
+    "scam_type": "Telecom impersonation and suspected fraud communications",
+    "deadline_days": null,
+    "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2011488&lang=2&reg=48"
+  },
   {
-  "id": "015",
-  "issuer": "Reserve Bank of India",
-  "doc_type": "FAQ",
-  "number": null,
-  "date": "2026-07-01",
-  "topic": "Frequently asked questions about the Reserve Bank Integrated Ombudsman Scheme, 2026, including complaint submission, eligible entities and appeal procedures.",
-  "scam_type": "Banking grievances and financial fraud complaints",
-  "deadline_days": null
-},
+    "id": "015",
+    "issuer": "Reserve Bank of India",
+    "doc_type": "FAQ",
+    "number": null,
+    "date": "2026-07-01",
+    "topic": "Frequently asked questions about the Reserve Bank Integrated Ombudsman Scheme, 2026, including complaint submission, eligible entities and appeal procedures.",
+    "scam_type": "Banking grievances and financial fraud complaints",
+    "deadline_days": null,
+    "source_url": "https://www.rbi.org.in/Scripts/FAQDisplay.aspx?Id=153"
+  },
   {
     "id": "016",
     "issuer": "Reserve Bank of India",
@@ -157,7 +172,8 @@
     "date": "2019-01-04",
     "topic": "Customer protection framework limiting liability for unauthorised electronic payment transactions involving prepaid payment instruments issued by authorised non-bank issuers.",
     "scam_type": "Unauthorised prepaid wallet and PPI transactions",
-    "deadline_days": null
+    "deadline_days": null,
+    "source_url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=11446"
   },
   {
     "id": "017",
@@ -167,7 +183,8 @@
     "date": "2020-08-06",
     "topic": "Requires authorised payment system operators and participants to establish online dispute resolution systems for customer disputes and grievances involving digital payments, initially including failed transactions.",
     "scam_type": "Digital payment disputes and failed transactions",
-    "deadline_days": null
+    "deadline_days": null,
+    "source_url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=11946"
   },
   {
     "id": "018",
@@ -177,7 +194,8 @@
     "date": "2019-09-20",
     "topic": "Establishes turnaround times for reversing failed transactions and compensation for delays across authorised payment systems.",
     "scam_type": "Failed UPI, card, ATM and electronic payment transactions",
-    "deadline_days": null
+    "deadline_days": null,
+    "source_url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=11693"
   },
   {
     "id": "019",
@@ -187,7 +205,8 @@
     "date": "2017-12-14",
     "topic": "Customer protection framework limiting liability for unauthorised electronic banking transactions involving primary urban, state and district central co-operative banks.",
     "scam_type": "Unauthorised electronic banking transactions at co-operative banks",
-    "deadline_days": null
+    "deadline_days": null,
+    "source_url": "https://www.rbi.org.in/SCRIPTS/BS_CircularIndexDisplay.aspx?Id=11188"
   },
   {
     "id": "020",
@@ -197,6 +216,7 @@
     "date": "2021-11-12",
     "topic": "Historical Reserve Bank Integrated Ombudsman Scheme, 2021, establishing a cost-free grievance redress mechanism for customers of covered regulated entities. Replaced by the 2026 scheme from July 1, 2026.",
     "scam_type": "Banking, NBFC and digital payment service grievances",
-    "deadline_days": null
+    "deadline_days": null,
+    "source_url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12192"
   }
 ]
