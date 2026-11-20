@@ -1,6 +1,6 @@
 """Application health and readiness endpoints."""
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
@@ -11,9 +11,14 @@ router = APIRouter(tags=["health"])
 
 
 @router.get("/health")
-async def health() -> dict[str, str]:
-    """Return a simple liveness response."""
-    return {"status": "ok"}
+async def health(request: Request) -> dict[str, str]:
+    """Return application liveness and the deployed Git commit."""
+    settings = request.app.state.settings
+
+    return {
+        "status": "ok",
+        "version": settings.git_sha,
+    }
 
 
 @router.get("/ready", response_model=None)

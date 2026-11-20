@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
     data_file: Path = Path("data/sample_records.json")
     database_url: str | None = None
+    git_sha: str = "dev"
 
 
 @lru_cache
