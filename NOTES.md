@@ -457,3 +457,39 @@ The existing 20 records were unchanged after the Compose restart. No duplicate r
 - Readiness returned HTTP 200 after PostgreSQL recovered.
 - The API recovered without a container restart.
 - The loader remained idempotent after restarting the Compose stack.
+## D04 · Docker, Compose and tests
+
+### Clean-clone verification
+
+- Cloned the repository into a separate directory and built the Compose stack successfully.
+- API container: healthy.
+- PostgreSQL container: healthy.
+- Redis container: healthy.
+- Migration container: exited with code 0.
+- Removed the temporary clone and restarted the original project successfully.
+- Verified the original stack again with `docker compose ps -a`.
+
+### Image and build
+
+- Image size: 301 MB (target: under 400 MB).
+- Runtime user: uid 999 (app), non-root.
+- Dependency installation layer was cached after a source-only change because dependency files had not changed.
+- Source-change cache rebuild: 19.6 seconds.
+- Clean-clone Compose build: approximately 30.5 seconds.
+
+### Stack and health checks
+
+- PostgreSQL and Redis health checks passed.
+- Migration and seed service completed successfully.
+- `/health` returned HTTP 200 when the database was stopped.
+- `/ready` returned HTTP 503 when the database was stopped.
+- `/ready` returned HTTP 200 after the database restarted.
+- Re-running the seed loader left all 20 records unchanged.
+
+### Tests
+
+- Unit tests: 16 passed.
+- Integration tests: 7 passed.
+- Coverage run without integration database: 16 passed, 7 skipped.
+- Coverage run with integration database: 23 passed.
+- Full test coverage: approximately 92%.
