@@ -4,19 +4,23 @@ Safe to run repeatedly:
 - New records are inserted.
 - Changed records are updated.
 - Unchanged records are skipped.
+- Missing records are reported but not deleted by default.
 
+Use --prune to delete database documents missing from the JSON file.
 A SHA-256 fingerprint is used to detect changes.
 
 Run:
     uv run python scripts/load_db.py
+    uv run python scripts/load_db.py --prune
 """
 
+import argparse
 import asyncio
 import hashlib
 import json
 from datetime import date
 
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 
 from fraudfirstaid.config import get_settings
 from fraudfirstaid.db.models import Document
@@ -61,19 +65,23 @@ def to_row(record: dict) -> dict:
     }
 
 
-async def main() -> None:
-    """Load JSON records into PostgreSQL idempotently."""
+async def main(prune: bool = False) -> None:
+    """Load JSON records and optionally prune missing database documents."""
     settings = get_settings()
     records = json.loads(settings.data_file.read_text(encoding="utf-8"))
 
     inserted = 0
     updated = 0
     unchanged = 0
+    deleted = 0
 
     try:
         async with AsyncSessionLocal() as session, session.begin():
             result = await session.execute(select(Document.external_id, Document.sha256))
             existing = dict(result.all())
+
+            json_ids = {str(record["id"]) for record in records}
+            missing_ids = set(existing) - json_ids
 
             for record in records:
                 row = to_row(record)
@@ -93,11 +101,32 @@ async def main() -> None:
                 else:
                     unchanged += 1
 
+            if prune and missing_ids:
+                result = await session.execute(
+                    delete(Document).where(Document.external_id.in_(missing_ids))
+                )
+                deleted = result.rowcount or 0
+
     finally:
         await engine.dispose()
 
-    print(f"records={len(records)} inserted={inserted} updated={updated} unchanged={unchanged}")
+    print(
+        f"records={len(records)} "
+        f"inserted={inserted} "
+        f"updated={updated} "
+        f"unchanged={unchanged} "
+        f"missing={len(missing_ids)} "
+        f"deleted={deleted}"
+    )
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    parser = argparse.ArgumentParser(description="Load documents into Postgres.")
+    parser.add_argument(
+        "--prune",
+        action="store_true",
+        help="Delete database documents missing from the JSON file.",
+    )
+    args = parser.parse_args()
+
+    asyncio.run(main(prune=args.prune))

@@ -114,3 +114,61 @@ The table currently contains only 20 documents. Reading the entire table is chea
 As the table grows and the metadata filter becomes selective enough, PostgreSQL may choose the GIN index because it can reduce the number of rows that need to be read.
 
 Disabling sequential scans demonstrates that the GIN index `ix_documents_metadata_gin` is available and can be used.
+
+## 4. Loader pruning evidence
+
+The loader now detects database documents that no longer exist in `data/sample_records.json`.
+
+### Safe mode — original dataset
+
+Command:
+
+```powershell
+uv run python scripts/load_db.py
+```
+
+Output:
+
+```text
+records=20 inserted=0 updated=0 unchanged=20 missing=0 deleted=0
+```
+
+### Missing document detection
+
+A temporary test document (`__prune_test__`) was inserted directly into PostgreSQL.
+
+Running the loader without `--prune`:
+
+```text
+records=20 inserted=0 updated=0 unchanged=20 missing=1 deleted=0
+```
+
+The missing document was detected but not deleted.
+
+### Prune mode
+
+Command:
+
+```powershell
+uv run python scripts/load_db.py --prune
+```
+
+Output:
+
+```text
+records=20 inserted=0 updated=0 unchanged=20 missing=1 deleted=1
+```
+
+The temporary test document was deleted successfully.
+
+### Final verification
+
+Running the loader again without `--prune`:
+
+```text
+records=20 inserted=0 updated=0 unchanged=20 missing=0 deleted=0
+```
+
+The temporary record was removed, and all 20 original JSON documents remain in the database.
+
+**Conclusion:** Deletion is disabled by default. Documents missing from the JSON file are deleted only when the loader is explicitly run with `--prune`.
