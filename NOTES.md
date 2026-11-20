@@ -1,4 +1,5 @@
-﻿# FraudFirstAid — Project Notes
+﻿
+# FraudFirstAid — Project Notes
 
 ## Day 6 Notes
 
@@ -231,3 +232,228 @@ to its original application factory docstring:
 ```
 
 The temporary cache-test modification was removed after verification.
+
+## 10. Docker Compose stack
+
+Created `docker-compose.yml` to run the complete local development stack.
+
+Services:
+
+- `db`: PostgreSQL 17 with pgvector.
+- `redis`: Redis 7 Alpine.
+- `migrate`: Runs Alembic migrations and loads sample records.
+- `api`: Runs the FastAPI application.
+
+### PostgreSQL configuration
+
+- Database: `app`
+- User: `app`
+- Host port: `5433`
+- Container port: `5432`
+- Persistent named volume: `pgdata`
+
+A separate test database is initialized through:
+
+```text
+docker/initdb/01-create-test-db.sql
+```
+
+The SQL initialization creates `test_db` owned by `app`.
+
+### Health checks and startup dependencies
+
+- PostgreSQL uses `pg_isready`.
+- Redis uses `redis-cli ping`.
+- API waits for PostgreSQL and Redis to become healthy.
+- API waits for the migration service to complete successfully.
+- Migration service waits for PostgreSQL to become healthy.
+
+### Compose configuration validation
+
+Command:
+
+```powershell
+docker compose config --quiet
+```
+
+Result: passed with no configuration errors.
+
+## 11. Docker Compose startup evidence
+
+Started the stack with:
+
+```powershell
+docker compose up --build -d
+```
+
+Initial service results:
+
+```text
+db       Healthy
+redis    Healthy
+migrate  Exited (0)
+api      Started
+```
+
+### Migration and seed output
+
+```text
+Running upgrade -> afe23be4c384, create documents and pages
+Running upgrade afe23be4c384 -> f2598cbeaee3, add metadata gin index
+records=20 inserted=20 updated=0 unchanged=0
+```
+
+The migration service completed successfully, and the initial 20 sample records were inserted.
+
+## 12. API health and readiness verification
+
+### Initial healthy state
+
+Command:
+
+```powershell
+curl.exe -s http://localhost:8000/health
+curl.exe -s http://localhost:8000/ready
+```
+
+Actual output:
+
+```text
+{"status":"ok"}
+{"status":"ready","checks":{"database":true}}
+```
+
+The API was alive and PostgreSQL was reachable.
+
+## 13. Database failure and readiness verification
+
+Stopped PostgreSQL:
+
+```powershell
+docker compose stop db
+```
+
+### Liveness check while database was stopped
+
+Actual output:
+
+```text
+{"status":"ok"}
+```
+
+The API remained alive even though PostgreSQL was unavailable.
+
+### Initial readiness failure
+
+The first readiness test returned:
+
+```text
+Internal Server Error
+```
+
+Inspection of the API logs showed a database connection failure ending in:
+
+```text
+socket.gaierror: [Errno -2] Name or service not known
+```
+
+The readiness endpoint originally caught `SQLAlchemyError` but did not catch the operating-system connection error.
+
+### Readiness endpoint correction
+
+Updated:
+
+```text
+src/fraudfirstaid/api/routes/health.py
+```
+
+The readiness endpoint now catches:
+
+```python
+except (SQLAlchemyError, OSError):
+```
+
+When the database is unavailable, it returns HTTP 503 and a structured `not_ready` response.
+
+### Successful failure test after correction
+
+Actual HTTP response from `/health`:
+
+```text
+HTTP/1.1 200 OK
+
+{"status":"ok"}
+```
+
+Actual HTTP response from `/ready`:
+
+```text
+HTTP/1.1 503 Service Unavailable
+
+{"status":"not_ready","checks":{"database":false}}
+```
+
+Ruff formatting and lint checks passed after the correction.
+
+## 14. Database recovery verification
+
+Restarted PostgreSQL:
+
+```powershell
+docker compose start db
+```
+
+The database returned to `healthy` status. Redis and the API were also healthy.
+
+### Readiness after database recovery
+
+Actual HTTP response:
+
+```text
+HTTP/1.1 200 OK
+
+{"status":"ready","checks":{"database":true}}
+```
+
+The API recovered its database connectivity without restarting the API container.
+
+## 15. Docker Compose restart and seed idempotency
+
+Stopped and removed the Compose containers without deleting the persistent database volume:
+
+```powershell
+docker compose down
+```
+
+Started the stack again:
+
+```powershell
+docker compose up -d
+```
+
+Checked migration logs:
+
+```powershell
+docker compose logs migrate
+```
+
+### Actual migration and seed output
+
+```text
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+records=20 inserted=0 updated=0 unchanged=20
+```
+
+The existing 20 records were unchanged after the Compose restart. No duplicate records were inserted.
+
+### Final result
+
+- PostgreSQL and Redis health checks passed.
+- The migration service completed successfully.
+- The API health and readiness endpoints worked.
+- The API remained alive during database failure.
+- Readiness correctly returned HTTP 503 when PostgreSQL was unavailable.
+- Readiness returned HTTP 200 after PostgreSQL recovered.
+- The API recovered without a container restart.
+- The loader remained idempotent after restarting the Compose stack.
