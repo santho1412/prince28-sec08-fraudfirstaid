@@ -1,6 +1,7 @@
 """Shared fixtures for API tests."""
 
 from collections.abc import Iterator
+from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
@@ -11,10 +12,25 @@ from fraudfirstaid.api.main import create_app
 from fraudfirstaid.config import Settings
 from fraudfirstaid.db.session import get_db
 
-SAMPLE = [
-    {"id": "001", "title": "Alpha guideline", "year": 2023},
-    {"id": "002", "title": "Beta circular", "year": 2024},
-    {"id": "003", "title": "Gamma notice", "year": 2025},
+SAMPLE_DOCUMENTS: list[dict[str, Any]] = [
+    {
+        "id": "001",
+        "title": "Alpha guideline",
+        "year": 2023,
+        "issuer": "RBI",
+    },
+    {
+        "id": "002",
+        "title": "Beta circular",
+        "year": 2024,
+        "issuer": "CERT-In",
+    },
+    {
+        "id": "003",
+        "title": "Gamma notice",
+        "year": 2025,
+        "issuer": "RBI",
+    },
 ]
 
 
@@ -30,7 +46,10 @@ class FakeDatabaseSession:
 
 
 class FakeDocumentRepository:
-    """Fake document repository for API tests."""
+    """In-memory document repository for API unit tests."""
+
+    def __init__(self) -> None:
+        self.records = [record.copy() for record in SAMPLE_DOCUMENTS]
 
     async def list(
         self,
@@ -39,8 +58,8 @@ class FakeDocumentRepository:
         filters: dict[str, str],
         limit: int,
         offset: int,
-    ) -> tuple[int, list[dict]]:
-        records = SAMPLE.copy()
+    ) -> tuple[int, list[dict[str, Any]]]:
+        records = self.records.copy()
 
         if q:
             records = [
@@ -59,23 +78,49 @@ class FakeDocumentRepository:
         total = len(records)
         return total, records[offset : offset + limit]
 
-    async def get(self, external_id: str) -> dict | None:
+    async def get(self, external_id: str) -> dict[str, Any] | None:
         return next(
-            (record for record in SAMPLE if record["id"] == external_id),
+            (record for record in self.records if record["id"] == external_id),
             None,
         )
 
 
 @pytest.fixture
-def client() -> Iterator[TestClient]:
-    """Create an API test client with fake database dependencies."""
-    app = create_app(Settings(app_env="ci"))
+def settings() -> Settings:
+    """Provide isolated test settings."""
+    return Settings(
+        app_env="ci",
+        database_url="postgresql://localhost:5432/unused",
+        _env_file=None,
+    )
+
+
+@pytest.fixture
+def db_state() -> dict[str, bool]:
+    """Control whether the fake database is available."""
+    return {"available": True}
+
+
+@pytest.fixture
+def client(
+    settings: Settings,
+    db_state: dict[str, bool],
+) -> Iterator[TestClient]:
+    """Create an API client with fake database dependencies."""
+    app = create_app(settings)
 
     async def override_get_db():
-        yield FakeDatabaseSession()
+        yield FakeDatabaseSession(
+            should_fail=not db_state["available"],
+        )
+
+    def override_get_document_repository() -> FakeDocumentRepository:
+        return FakeDocumentRepository()
 
     app.dependency_overrides[get_db] = override_get_db
-    app.dependency_overrides[get_document_repository] = FakeDocumentRepository
+    app.dependency_overrides[get_document_repository] = override_get_document_repository
 
     with TestClient(app) as test_client:
         yield test_client
+
+    app.dependency_overrides.clear()
