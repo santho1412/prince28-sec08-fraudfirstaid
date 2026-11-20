@@ -11,7 +11,19 @@ def test_health_is_ok(client: TestClient) -> None:
     response = client.get("/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert response.json() == {
+        "status": "ok",
+        "version": "dev",
+    }
+
+
+def test_health_reports_git_sha(client: TestClient) -> None:
+    client.app.state.settings.git_sha = "abc123"
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json()["version"] == "abc123"
 
 
 def test_ready_when_database_is_available(client: TestClient) -> None:

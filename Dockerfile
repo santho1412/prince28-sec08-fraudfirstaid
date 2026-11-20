@@ -39,9 +39,13 @@ COPY --chown=app:app alembic ./alembic
 COPY --chown=app:app scripts ./scripts
 COPY --chown=app:app data ./data
 
+# Embed the Git commit used to build this image
+ARG GIT_SHA=dev
+
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+    PYTHONDONTWRITEBYTECODE=1 \
+    GIT_SHA=${GIT_SHA}
 
 USER app
 
