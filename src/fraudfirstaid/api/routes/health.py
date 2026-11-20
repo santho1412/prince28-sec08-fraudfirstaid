@@ -21,7 +21,7 @@ async def ready(session: DbSessionDep) -> JSONResponse | dict[str, object]:
     """Check whether PostgreSQL is reachable."""
     try:
         await session.execute(text("SELECT 1"))
-    except SQLAlchemyError:
+    except (SQLAlchemyError, OSError):
         return JSONResponse(
             status_code=503,
             content={
