@@ -486,10 +486,10 @@ The existing 20 records were unchanged after the Compose restart. No duplicate r
 - `/ready` returned HTTP 200 after the database restarted.
 - Re-running the seed loader left all 20 records unchanged.
 
-### Tests
+### Tests and coverage
 
-- Unit tests: 16 passed.
-- Integration tests: 7 passed.
-- Coverage run without integration database: 16 passed, 7 skipped.
-- Coverage run with integration database: 23 passed.
-- Full test coverage: approximately 92%.
+Unit-only coverage:
+
+```text
+16 passed, 7 skipped
+TOTAL                                  247     28     40      6    85%
