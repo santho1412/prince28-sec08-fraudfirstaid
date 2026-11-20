@@ -1,9 +1,15 @@
-﻿# Python
+﻿
+# Python
 __pycache__/
 *.py[cod]
 .venv/
 .pytest_cache/
 .ruff_cache/
+
+# Test coverage
+.coverage
+.coverage.*
+htmlcov/
 
 # Secrets: never commit
 .env
