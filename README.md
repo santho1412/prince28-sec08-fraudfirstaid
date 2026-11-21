@@ -1,9 +1,12 @@
-
 # Fraud First Aid
+
+[![CI](https://github.com/santho1412/prince28-sec08-fraudfirstaid/actions/workflows/ci.yml/badge.svg)](https://github.com/santho1412/prince28-sec08-fraudfirstaid/actions/workflows/ci.yml)
+[![Live API](https://img.shields.io/website?url=https%3A%2F%2Ffraudfirstaid-api.onrender.com%2Fhealth&label=live%20API)](https://fraudfirstaid-api.onrender.com/docs)
+[![Uptime](https://img.shields.io/uptimerobot/ratio/m804759926-69e852256f57023fb6940e33)](https://fraudfirstaid-api.onrender.com/health)
 
 Fraud First Aid is an evidence-based cyber-fraud emergency response and reporting assistance platform designed to help victims of online financial fraud in India.
 
-**Status:** Day 1 foundation — Python project setup, quality gates and FastAPI skeleton. Live URL planned from Day 5.
+**Status:** Week 1 complete · live at https://fraudfirstaid-api.onrender.com
 
 ## Who it's for
 
@@ -73,6 +76,7 @@ http://localhost:8000/docs
 uv run pytest
 uv run ruff check .
 ```
+
 ## Run locally in one command
 
 You need Docker Desktop running. From a fresh clone:
