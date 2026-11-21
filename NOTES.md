@@ -493,3 +493,83 @@ Unit-only coverage:
 ```text
 16 passed, 7 skipped
 TOTAL                                  247     28     40      6    85%
+## D05 · CI/CD and going live
+
+### 1. Live deployment
+
+- Live URL: https://fraudfirstaid-api.onrender.com
+- API documentation: https://fraudfirstaid-api.onrender.com/docs
+- Health endpoint: https://fraudfirstaid-api.onrender.com/health
+- Readiness endpoint: https://fraudfirstaid-api.onrender.com/ready
+- Hosting: Render
+- Database: Neon PostgreSQL
+- Container registry: GitHub Container Registry (GHCR)
+
+### 2. Continuous integration
+
+- PR #5: CI workflow merged successfully.
+- CI checks: lint and test; build image.
+- Both required CI checks passed.
+- Docker image published to GHCR with commit-specific SHA tags.
+- GHCR package made public for Render image deployment.
+
+### 3. Continuous deployment
+
+- PR #6: CD workflow merged successfully.
+- PR #7: README live URL and badges merged successfully.
+- Automatic deployment after merging to main: successful.
+- Deployment migrations: successful.
+- Live smoke test: passed.
+
+### 4. Smoke test evidence
+
+```text
+ok   /health -> 200
+ok   /ready -> 200
+ok   /v1/documents?limit=1 -> 200
+Smoke test passed
+```
+
+### 5. Rollback drill
+
+- Rollback target (PR #5 merge): bd4c436c62970c4a6a189a2ae5d1e5dbb2aa0c4f
+- Rollback CD workflow: successful.
+- Migration step: skipped as expected.
+- Rollback smoke test: passed.
+
+### 6. Roll-forward drill
+
+- Latest main commit: 3f76fe7cc649029a2b06fbb6f64a7d315a4eb1f8
+- Roll-forward CD workflow: successful.
+- Smoke test: passed.
+- Production restored to the latest application version.
+
+### 7. Why was rollback safe for the database?
+
+The rollback changed the application image, not the database schema. No incompatible database migration was introduced between the rollback target and the latest deployment. Therefore, the older application version could continue using the existing database schema.
+
+### 8. Where my secrets live
+
+- Neon database connection string: GitHub Secret DATABASE_URL and Render environment variables.
+- Render deploy hook: GitHub Secret RENDER_DEPLOY_HOOK.
+- Live URL: GitHub Actions variable LIVE_URL.
+- Secrets are not committed to Git or included in the Docker image.
+
+### 9. Monitoring
+
+- Monitoring service: UptimeRobot.
+- Monitor: FraudFirstAid API.
+- Endpoint: https://fraudfirstaid-api.onrender.com/health
+- Check interval: every 5 minutes.
+- Email alerts: configured.
+- README includes CI, Live API and Uptime badges.
+
+### 10. Day 5 completion
+
+- CI on pull requests: complete.
+- Main branch protection: complete.
+- Render production deployment: complete.
+- Automatic CD deployment: complete.
+- Uptime monitoring: configured.
+- README badges and live URL: complete.
+- Rollback and roll-forward drills: complete.
