@@ -1,0 +1,109 @@
+
+# CD: deploy the exact image after successful CI, or manually roll back.
+
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "Full 40-character commit SHA to deploy or roll back to"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Render
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    env:
+      DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || inputs.sha }}
+      LIVE_URL: ${{ vars.LIVE_URL }}
+
+    steps:
+      - name: Validate commit SHA
+        shell: bash
+        run: |
+          if [[ ! "$DEPLOY_SHA" =~ ^[0-9a-fA-F]{40}$ ]]; then
+            echo "DEPLOY_SHA must be a full 40-character commit SHA."
+            exit 1
+          fi
+
+      - name: Check out current workflow tools
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Check out the requested deployment commit
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+          path: target
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.11.32"
+          enable-cache: true
+
+      - name: Install target commit dependencies
+        working-directory: target
+        run: uv sync --locked
+
+      - name: Run database migrations
+        if: github.event_name == 'workflow_run'
+        working-directory: target
+        env:
+          APP_ENV: production
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: uv run alembic upgrade head
+
+      - name: Deploy exact image to Render
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        shell: bash
+        run: |
+          IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}:sha-${DEPLOY_SHA}"
+
+          echo "Requesting Render deployment of ${IMAGE}"
+
+          curl --fail-with-body --silent --show-error \
+            --get \
+            --data-urlencode "imgURL=${IMAGE}" \
+            "$RENDER_DEPLOY_HOOK"
+
+      - name: Smoke test the live URL
+        shell: bash
+        run: |
+          for attempt in {1..30}; do
+            echo "Smoke test attempt ${attempt}/30"
+
+            if uv run --project target python scripts/smoke.py "$LIVE_URL" \
+              --expect-version "$DEPLOY_SHA"; then
+              exit 0
+            fi
+
+            if [[ "$attempt" -lt 30 ]]; then
+              echo "Deployment is not ready yet. Waiting 20 seconds..."
+              sleep 20
+            fi
+          done
+
+          echo "Deployment did not pass its smoke test within 10 minutes."
+          exit 1
