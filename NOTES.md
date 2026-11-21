@@ -573,3 +573,8 @@ The rollback changed the application image, not the database schema. No incompat
 - Uptime monitoring: configured.
 - README badges and live URL: complete.
 - Rollback and roll-forward drills: complete.
+
+## D05 Stretch — Production approval gate
+
+- Configured the GitHub `production` environment with `santho1412` as a required reviewer. Self-review is allowed, and administrator bypass remains enabled.
+- A manual approval delay is worthwhile for high-risk production changes because it provides an opportunity to review deployments before release. For routine, low-risk changes, the delay may slow delivery without providing much additional benefit.

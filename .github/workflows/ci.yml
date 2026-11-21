@@ -1,6 +1,6 @@
 
 # CI: every pull request and every push to main.
-# lint -> unit + integration tests -> build image -> push it (main only)
+# pre-commit -> lint -> unit + integration tests -> build image -> push it (main only)
 
 name: CI
 
@@ -50,6 +50,9 @@ jobs:
           enable-cache: true
 
       - run: uv sync --locked
+
+      - name: Run pre-commit hooks
+        run: uv run pre-commit run --all-files
 
       - run: uv run poe lint
 
