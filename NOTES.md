@@ -578,3 +578,19 @@ The rollback changed the application image, not the database schema. No incompat
 
 - Configured the GitHub `production` environment with `santho1412` as a required reviewer. Self-review is allowed, and administrator bypass remains enabled.
 - A manual approval delay is worthwhile for high-risk production changes because it provides an opportunity to review deployments before release. For routine, low-risk changes, the delay may slow delivery without providing much additional benefit.
+
+## D05 Stretch — Deployment lead-time measurement
+
+Three successful CD runs were reviewed:
+
+| CD run | Associated PR | Result | Total duration |
+|---|---:|---|---:|
+| CD #1 | #6 | Smoke test passed | 1m 6s |
+| CD #3 | #7 | Smoke test passed | 59s |
+| CD #8 | #9 | Smoke test passed | 1m 4s |
+
+- Average CD workflow duration: approximately 1m 3s.
+- Slowest identified step: smoke test, taking 44 seconds in CD #8.
+- All three deployments completed successfully.
+- The GitHub relative timestamps were rounded (for example, "2 hours ago"), so exact merge-to-smoke-test lead times and their average have not yet been established.
+- Exact timestamps are needed to calculate change lead time accurately.
