@@ -581,22 +581,32 @@ The rollback changed the application image, not the database schema. No incompat
 
 ## D05 Stretch — Deployment lead-time measurement
 
-Three successful CD runs were reviewed:
+Three successful automatic deployments associated with merged pull requests were measured using the exact GitHub pull request merge timestamps and smoke-test completion timestamps.
 
-| CD run | Associated change | Trigger | Result | Total duration |
-|---|---|---|---|---:|
-| CD #1 | PR #6 | Automatic | Smoke test passed | 1m 3s |
-| CD #3 | Rollback drill | Manual | Smoke test passed | 56s |
-| CD #8 | PR #9 | Automatic | Smoke test passed | 1m 4s |
+All timestamps below are in Indian Standard Time (IST, UTC+5:30).
+
+| CD run | Pull request | Merge time (IST) | Smoke test passed (IST) | Change lead time |
+|---|---:|---|---|---:|
+| CD #1 | PR #6 | 2026-11-21 15:28:22 | 2026-11-21 15:30:38 | 2m 16s |
+| CD #8 | PR #9 | 2026-11-21 22:37:19 | 2026-11-21 22:39:50 | 2m 31s |
+| CD #7 | PR #8 | 2026-11-21 21:56:28 | 2026-11-21 21:58:29 | 2m 1s |
 
 ### Results
 
-- Average CD workflow duration: 61 seconds (1m 1s).
-- Slowest identified step: smoke test, taking 44 seconds.
-- All three CD runs completed successfully.
-- CD #3 was manually triggered and deployed the rollback target, so it is not a valid PR #7 merge-to-deployment measurement.
-- GitHub displayed rounded relative timestamps, so exact merge-to-smoke-test lead times have not yet been established.
-- The average above measures workflow duration, not DORA change lead time. Exact timestamps are required to calculate the latter accurately.
+- Average DORA change lead time: 136 seconds (2m 16s).
+- All three deployments were automatic deployments associated with merged pull requests.
+- All three production smoke tests passed.
+- Smoke-test durations: 44 seconds for CD #1, 44 seconds for CD #8, and 43 seconds for CD #7.
+- Slowest individual smoke-test step: 44 seconds.
+- Change lead time was calculated from the exact pull request merge timestamp to the successful smoke-test completion timestamp.
+
+### Calculation
+
+- PR #6 / CD #1: 136 seconds (2m 16s).
+- PR #9 / CD #8: 151 seconds (2m 31s).
+- PR #8 / CD #7: 121 seconds (2m 1s).
+
+Average = (136 + 151 + 121) / 3 = 136 seconds (2m 16s).
 
 ### Human approval gate verification
 
