@@ -583,14 +583,26 @@ The rollback changed the application image, not the database schema. No incompat
 
 Three successful CD runs were reviewed:
 
-| CD run | Associated PR | Result | Total duration |
-|---|---:|---|---:|
-| CD #1 | #6 | Smoke test passed | 1m 6s |
-| CD #3 | #7 | Smoke test passed | 59s |
-| CD #8 | #9 | Smoke test passed | 1m 4s |
+| CD run | Associated change | Trigger | Result | Total duration |
+|---|---|---|---|---:|
+| CD #1 | PR #6 | Automatic | Smoke test passed | 1m 3s |
+| CD #3 | Rollback drill | Manual | Smoke test passed | 56s |
+| CD #8 | PR #9 | Automatic | Smoke test passed | 1m 4s |
 
-- Average CD workflow duration: approximately 1m 3s.
-- Slowest identified step: smoke test, taking 44 seconds in CD #8.
-- All three deployments completed successfully.
-- The GitHub relative timestamps were rounded (for example, "2 hours ago"), so exact merge-to-smoke-test lead times and their average have not yet been established.
-- Exact timestamps are needed to calculate change lead time accurately.
+### Results
+
+- Average CD workflow duration: 61 seconds (1m 1s).
+- Slowest identified step: smoke test, taking 44 seconds.
+- All three CD runs completed successfully.
+- CD #3 was manually triggered and deployed the rollback target, so it is not a valid PR #7 merge-to-deployment measurement.
+- GitHub displayed rounded relative timestamps, so exact merge-to-smoke-test lead times have not yet been established.
+- The average above measures workflow duration, not DORA change lead time. Exact timestamps are required to calculate the latter accurately.
+
+### Human approval gate verification
+
+- Configured the GitHub `production` environment with myself as a required reviewer.
+- Manually triggered CD #11 on `main` using commit `0a0a56b`.
+- Verified that deployment paused while waiting for production approval.
+- Approved the pending deployment through GitHub Actions.
+- CD #11 completed successfully in 14m 16s.
+- This confirms that the production approval gate works as intended.
