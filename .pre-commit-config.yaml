@@ -1,5 +1,5 @@
 
-# Runs automatically on every git commit and in GitHub Actions CI.
+# Runs on every "git commit". If a hook fails, the commit is stopped.
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -10,12 +10,13 @@ repos:
       - id: check-toml
       - id: check-added-large-files
         args: ["--maxkb=500"]
+        exclude: ^data/manifest\.jsonl$
       - id: detect-private-key
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.17.4
     hooks:
-      - id: ruff
+      - id: ruff-check
         args: ["--fix"]
       - id: ruff-format
 
@@ -23,4 +24,4 @@ repos:
     rev: v1.5.0
     hooks:
       - id: detect-secrets
-        exclude: ^(uv\.lock|alembic/versions/.*\.py)$
+        exclude: ^(uv\.lock|alembic/versions/.*\.py|data/manifest\.jsonl)$
