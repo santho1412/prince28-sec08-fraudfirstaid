@@ -1,0 +1,22 @@
+# Sources for FraudFirstAid. One row per file to download. Lines starting with # are notes.
+# Start target: RBI liability circular + Ombudsman scheme + portal FAQs + 50 advisories
+# Where to look:
+#   https://cybercrime.gov.in/
+#   https://www.rbi.org.in/Scripts/BS_ViewMasCirculardetails.aspx?id=11040
+#   https://cms.rbi.org.in/
+#   https://sancharsaathi.gov.in/
+#   https://www.cert-in.org.in/
+# Terms on my project card: Public government documents. Never store real victim names, account numbers or card numbers.
+url,source,licence,title
+
+https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63011,rbi,"Official RBI publication; reuse permission not yet verified",2026 Customer Protection Amendment
+https://www.rbi.org.in/Scripts/FS_PressRelease.aspx?prid=62052,rbi,"Official RBI publication; reuse permission not yet verified",Integrated Ombudsman Scheme 2026
+https://cybercrime.gov.in/pdf/Advisories/ADVISORYTAU-ADV-003DigitalArrest06.03.2025.pdf,i4c,"Official government publication; reuse permission not yet verified",Digital Arrest Advisory
+https://www.cert-in.org.in/s2cMainServlet?VLCODE=CIAD-2025-0019&pageid=PUBVLNOTES02,certin,"Official CERT-In publication; reuse permission not yet verified",Cybersecurity Advisory CIAD-2025-0019
+https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=13545,rbi,"Official RBI publication; reuse permission not yet verified",Payments Banks Amendment Directions 2026
+https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12898,rbi,"Official RBI publication; reuse permission not yet verified",Authentication Mechanisms for Digital Payments
+https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12702,rbi,"Official RBI publication; reuse permission not yet verified",Fraud Prevention Master Directions
+https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=11040,rbi,"Official RBI publication; reuse permission not yet verified",Customer Protection and Limited Liability Circular
+https://www.cert-in.org.in/PDF/CERT-In_Directions_70B_28.04.2022.pdf,certin,"Official CERT-In publication; reuse permission not yet verified",CERT-In Directions 2022
+https://www.cert-in.org.in/PDF/FAQs_on_CyberSecurityDirections_May2022.pdf,certin,"Official CERT-In publication; reuse permission not yet verified",CERT-In Directions FAQs
+# https://example.org/reports/annual-2024.pdf,example-org,"CC BY 4.0",Annual report 2024

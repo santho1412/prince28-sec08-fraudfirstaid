@@ -112,12 +112,14 @@ def get_live_url() -> str | None:
         return sys.argv[1].rstrip("/")
 
     readme = read_text("README.md")
-    urls = re.findall(r"https?://[^\s)>]+", readme)
 
-    for url in urls:
-        cleaned = url.rstrip(".,;")
-        if "onrender.com" in cleaned:
-            return cleaned.rstrip("/")
+    match = re.search(
+        r"https?://fraudfirstaid-api\.onrender\.com",
+        readme,
+    )
+
+    if match:
+        return match.group(0).rstrip("/")
 
     return None
 
@@ -147,9 +149,6 @@ for relative_path in foundation_files:
 
 questions = read_text("docs/QUESTIONS.md")
 
-# Supports headings such as:
-# ## 1. Emergency response
-# followed by the question on the next line.
 question_count = len(re.findall(r"(?m)^##\s+\d+\.\s+\S", questions))
 
 report(
@@ -169,7 +168,12 @@ report(
 hooks_path_ok, hooks_path = run_command(["git", "config", "--get", "core.hooksPath"])
 
 if hooks_path_ok and hooks_path:
-    hook_file = Path(hooks_path.strip()) / "pre-commit"
+    configured_path = Path(hooks_path.strip())
+
+    if not configured_path.is_absolute():
+        configured_path = ROOT / configured_path
+
+    hook_file = configured_path / "pre-commit"
 else:
     hook_file = ROOT / ".git" / "hooks" / "pre-commit"
 
@@ -236,8 +240,6 @@ report(
 
 notes = read_text("NOTES.md")
 
-# Accept either a dedicated D03 heading or the existing
-# database migration evidence and migration history sections.
 has_d03_documentation = re.search(r"(?im)^##\s+D03\b", notes) is not None or (
     "Database migration evidence" in notes and "Migration history" in notes
 )
@@ -305,9 +307,19 @@ report(
     "github.com/" in readme and ("actions/workflows" in readme or "badge" in readme.lower()),
 )
 
+readme_urls = re.findall(
+    r"\]\((https?://[^)\s]+)\)",
+    readme,
+) + re.findall(
+    r"https?://[^\s<>()\]]+",
+    readme,
+)
+
+has_live_api_url = any("fraudfirstaid-api.onrender.com" in url for url in readme_urls)
+
 report(
     "README contains the live API URL",
-    "https://fraudfirstaid-api.onrender.com" in readme,
+    has_live_api_url,
 )
 
 tag_ok, tag_output = run_command(["git", "tag", "--list", "week-1"])
@@ -337,11 +349,15 @@ else:
     try:
         request = urllib.request.Request(
             f"{live_url}/health",
-            headers={"User-Agent": "FraudFirstAid-Week1-Check"},
+            headers={
+                "User-Agent": "FraudFirstAid-Week1-Check",
+                "Accept": "application/json",
+            },
         )
 
-        with urllib.request.urlopen(request, timeout=20) as response:
+        with urllib.request.urlopen(request, timeout=30) as response:
             status_code = response.status
+            content_type = response.headers.get("Content-Type", "")
             body = response.read().decode(
                 "utf-8",
                 errors="replace",
@@ -352,10 +368,16 @@ else:
         except json.JSONDecodeError:
             health_data = None
 
+        valid_health_response = (
+            status_code == 200
+            and "application/json" in content_type.lower()
+            and isinstance(health_data, dict)
+        )
+
         report(
             "Live /health endpoint returns HTTP 200 JSON",
-            status_code == 200 and isinstance(health_data, dict),
-            f"HTTP {status_code}",
+            valid_health_response,
+            f"HTTP {status_code}; Content-Type: {content_type}",
         )
 
         if isinstance(health_data, dict):
@@ -374,7 +396,18 @@ else:
                         )
                     else:
                         print("[INFO] Live version matches origin/main.")
+                else:
+                    warn(
+                        "Could not determine origin/main version",
+                        main_sha,
+                    )
 
+    except urllib.error.HTTPError as exc:
+        report(
+            "Live /health endpoint returns HTTP 200 JSON",
+            False,
+            f"HTTP {exc.code}: {exc.reason}",
+        )
     except (
         urllib.error.URLError,
         TimeoutError,
