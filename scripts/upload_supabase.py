@@ -14,6 +14,29 @@ from fraudfirstaid.ingest.fetch import Manifest
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / "data" / "manifest.jsonl"
 RAW = ROOT / "data" / "raw"
+ENV_PATH = ROOT / ".env"
+
+
+def load_env() -> None:
+    """Load simple KEY=VALUE entries from the project .env file."""
+    if not ENV_PATH.is_file():
+        return
+
+    for line in ENV_PATH.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+
+        name, value = line.split("=", 1)
+        name = name.strip()
+        value = value.strip()
+
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+            value = value[1:-1]
+
+        if name:
+            os.environ.setdefault(name, value)
 
 
 def sha256_file(path: Path) -> str:
@@ -65,6 +88,8 @@ def main() -> int:
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
 
+    load_env()
+
     try:
         records = load_files()
     except (OSError, ValueError, KeyError) as exc:
@@ -74,7 +99,7 @@ def main() -> int:
     print(f"Verified files: {len(records)}")
 
     if not args.execute:
-        print("\nDRY RUN — no files uploaded.")
+        print("\nDRY RUN - no files uploaded.")
         for record in records:
             print(f"{record['bytes']:>10} bytes  {record['_object_key']}")
         return 0
