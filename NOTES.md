@@ -1,4 +1,4 @@
-﻿
+
 # FraudFirstAid — Project Notes
 
 ## Day 6 Notes
@@ -621,30 +621,58 @@ Average = (136 + 151 + 121) / 3 = 136 seconds (2m 16s).
 ## D06 · Collecting the corpus
 
 - Start target: RBI liability circular + Ombudsman scheme + portal FAQs + 50 advisories
-- Collected today: ___ files, ___ pages, ___ MB (from DATASET.md)
-- Doors used: URL list / Git repository / sitemap / by hand (keep the ones I used)
+- Collected today: 66 files, 224 pages, 22.7 MB (from DATASET.md)
+- Doors used: URL list and by hand (manual registration)
 
 ### Licence check
 
 | Source | Licence or terms, in my words | May I show full text in answers? |
 |---|---|---|
-| | | |
+| RBI | Caching is prohibited; downloading, storage and reproduction permissions need clarification. | No, not until permission is confirmed. |
+| CERT-In | Reproduction requires prior permission by email; third-party material needs separate permission. | No, not until permission is confirmed. |
+| I4C | Reproduction requires prior MHA permission; source acknowledgement is required. | No, not until permission is confirmed. |
 
 ### robots.txt
 
-- Site: ________ . Its robots.txt says (2 lines): ________
-- Was anything blocked for my bot? What did I do about it?
+- RBI: HTTP 418; robots.txt could not be retrieved.
+- CERT-In: HTTP 200 returned an HTML error page, not robots.txt rules.
+- I4C: TLS/SSL connection failed; robots.txt could not be retrieved.
+- No URLs were recorded as blocked by robots.txt in the collection report. However, robots rules could not be reliably verified for these sites, so permission must not be assumed.
 
 ### Kill and resume
 
-- Run 1: I pressed Ctrl+C after ___ files
-- Run 2: downloaded=___ skipped=___
-- Run 3: downloaded=0 skipped=___
+- Run 1: I pressed Ctrl+C after 2 files.
+- Run 2: downloaded=6 skipped=2
+- Run 3: downloaded=0 skipped=8
+- Verified: no `.part` files remained in the test corpus.
+- Test used an isolated temporary folder and did not modify the main corpus.
 
 ### Capacity (from docs/CAPACITY.md)
 
-- Tokens per page, measured: ___
-- Full corpus: ___ M tokens, ___ chunks, embedding about Rs ___, vectors ___ MB
-- The number that surprised me most, and why (2 lines):
+- Tokens per page, measured: 525
+- Full corpus: 1.05 M tokens, 3,018 chunks, embedding about Rs 17, vectors 9 MB.
+- The number that surprised me most was the estimated 1.05 million tokens for 2,000 pages. This is an approximation based on four characters per token, not an actual tokenizer measurement.
 
 ### One thing that went wrong today, and how I fixed it
+
+The I4C FAQ's older URL returned HTTP 403. I used the current FAQ page and saved it manually. I also identified an HTML file incorrectly saved with a PDF extension and documented it as an invalid PDF in DATASET.md.
+### Crawl statistics
+
+- Unique URLs in latest manifest: 75
+- Downloaded: 74
+- Failed: 1
+- Total downloaded bytes: 22,701,893 (22.7 MB)
+
+#### By source
+
+- RBI: 8
+- CERT-In: 33
+- I4C: 26
+- Local test: 8
+
+#### By content type
+
+- HTML: 40
+- PDF: 22
+- Unknown: 4
+- Plain text: 8

@@ -1,22 +1,94 @@
-# Sources for FraudFirstAid. One row per file to download. Lines starting with # are notes.
-# Start target: RBI liability circular + Ombudsman scheme + portal FAQs + 50 advisories
-# Where to look:
-#   https://cybercrime.gov.in/
-#   https://www.rbi.org.in/Scripts/BS_ViewMasCirculardetails.aspx?id=11040
-#   https://cms.rbi.org.in/
-#   https://sancharsaathi.gov.in/
-#   https://www.cert-in.org.in/
-# Terms on my project card: Public government documents. Never store real victim names, account numbers or card numbers.
+
+# Sources for FraudFirstAid.
+# Public availability does not automatically grant reuse permission.
+# Downloading, storing and reproducing permissions must be verified.
+# Never store real victim names, account numbers or card numbers.
+
+# ROBOTS.TXT CHECKS (2026-11-24)
+# RBI: HTTP 418; unable to retrieve robots.txt; download permission not confirmed.
+# CERT-In: HTTP 200 returned an HTML error page, not robots.txt rules; permission not confirmed.
+# I4C: TLS/SSL connection failed; unable to retrieve robots.txt; permission not confirmed.
+
+# COPYRIGHT CHECKS
+# RBI: Caching prohibited; downloading, storage and reproduction permissions require clarification.
+# CERT-In: Reproduction requires prior permission by email; third-party material requires separate permission.
+# I4C: Reproduction requires prior MHA permission; source acknowledgement required.
+
+# FINAL RULE: Do not assume downloading, storage or display permission where it is not explicitly granted.
+
 url,source,licence,title
 
-https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63011,rbi,"Official RBI publication; reuse permission not yet verified",2026 Customer Protection Amendment
-https://www.rbi.org.in/Scripts/FS_PressRelease.aspx?prid=62052,rbi,"Official RBI publication; reuse permission not yet verified",Integrated Ombudsman Scheme 2026
-https://cybercrime.gov.in/pdf/Advisories/ADVISORYTAU-ADV-003DigitalArrest06.03.2025.pdf,i4c,"Official government publication; reuse permission not yet verified",Digital Arrest Advisory
-https://www.cert-in.org.in/s2cMainServlet?VLCODE=CIAD-2025-0019&pageid=PUBVLNOTES02,certin,"Official CERT-In publication; reuse permission not yet verified",Cybersecurity Advisory CIAD-2025-0019
-https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=13545,rbi,"Official RBI publication; reuse permission not yet verified",Payments Banks Amendment Directions 2026
-https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12898,rbi,"Official RBI publication; reuse permission not yet verified",Authentication Mechanisms for Digital Payments
-https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12702,rbi,"Official RBI publication; reuse permission not yet verified",Fraud Prevention Master Directions
-https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=11040,rbi,"Official RBI publication; reuse permission not yet verified",Customer Protection and Limited Liability Circular
-https://www.cert-in.org.in/PDF/CERT-In_Directions_70B_28.04.2022.pdf,certin,"Official CERT-In publication; reuse permission not yet verified",CERT-In Directions 2022
-https://www.cert-in.org.in/PDF/FAQs_on_CyberSecurityDirections_May2022.pdf,certin,"Official CERT-In publication; reuse permission not yet verified",CERT-In Directions FAQs
-# https://example.org/reports/annual-2024.pdf,example-org,"CC BY 4.0",Annual report 2024
+# RBI documents
+https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63011,rbi,"RBI website prohibits caching; permission for downloading, storing and reproducing documents requires clarification",2026 Customer Protection Amendment
+https://www.rbi.org.in/Scripts/FS_PressRelease.aspx?prid=62052,rbi,"RBI website prohibits caching; permission for downloading, storing and reproducing documents requires clarification",Integrated Ombudsman Scheme 2026
+https://rbidocs.rbi.org.in/rdocs/content/pdfs/SCHEME16012026_A.pdf,rbi,"RBI website prohibits caching; permission for downloading, storing and reproducing documents requires clarification",Reserve Bank Integrated Ombudsman Scheme 2026 PDF - verify URL
+https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=13545,rbi,"RBI website prohibits caching; permission for downloading, storing and reproducing documents requires clarification",Payments Banks Amendment Directions 2026
+https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12898,rbi,"RBI website prohibits caching; permission for downloading, storing and reproducing documents requires clarification",Authentication Mechanisms for Digital Payments
+https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12702,rbi,"RBI website prohibits caching; permission for downloading, storing and reproducing documents requires clarification",Fraud Prevention Master Directions
+https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=11040,rbi,"RBI website prohibits caching; permission for downloading, storing and reproducing documents requires clarification",Customer Protection and Limited Liability Circular
+
+# CERT-In reference documents
+https://www.cert-in.org.in/PDF/CERT-In_Directions_70B_28.04.2022.pdf,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Directions 2022
+https://www.cert-in.org.in/PDF/FAQs_on_CyberSecurityDirections_May2022.pdf,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Directions FAQs
+
+# CERT-In advisories - 2025
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0055,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0055
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0054,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0054
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0053,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0053
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0052,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0052
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0051,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0051
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0050,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0050
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0049,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0049
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0048,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0048
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0047,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0047
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0046,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0046
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0045,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0045
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0044,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0044
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0043,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0043
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0042,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0042
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2025-0041,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2025-0041
+
+# CERT-In advisories - 2024
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0063,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0063
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0062,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0062
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0061,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0061
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0060,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0060
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0059,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0059
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0058,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0058
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0057,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0057
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0056,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0056
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0055,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0055
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0054,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0054
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0053,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0053
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0052,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0052
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0051,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0051
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0050,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0050
+https://www.cert-in.org.in/s2cMainServlet?pageid=PUBVLNOTES02&VLCODE=CIAD-2024-0049,certin,"CERT-In reproduction requires prior permission; third-party material requires separate permission",CERT-In Advisory CIAD-2024-0049
+
+# I4C advisory PDFs
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Advisory%20on%20digital.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Digital Arrest Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Misuse%20of%20Matrimonial.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Misuse of Matrimonial Platforms Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/WhatsApp%20Web%20Account.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",WhatsApp Web Account Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Advisory%20on.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Advisory on - title needs verification
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Advisory%20regarding%20fake.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Advisory regarding fake - title needs verification
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Fraudsters%20using%20heat.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Fraudsters Using Heat Signatures
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Fraudsters%20sending%20Fake.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Fake Job Offer SMS Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Cybercriminals%20using%20malicious.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Malicious Browser Extensions Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Cybercriminals%20using%20fake%20Social%20Media.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Fake Social Media Verification Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Cybercriminals%20using%20Caller.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Caller ID Spoofing Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Fraudsters%20using%20Army%20personnel.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Army Personnel Identity Fraud Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Fake%20SMSs%20related%20to%20unpaid.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Fake Unpaid Electricity Bill SMS Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Cybercriminals%20Tampering%20with.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Mobile Device Settings Tampering Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Cybercriminals%20perpetrating%20Eavesdropping.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Eavesdropping Attacks Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Banking%20Trojans.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Banking Trojans Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Cybercriminals%20using%20Fake%20Customer.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Fake Customer Care Numbers Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Malicious%20Executable%20Files.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Malicious Executable Files Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Cybercriminals%20committing%20Business.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Business Email Compromise Advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Cybercriminals%20defrauding%20citizens.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Cybercriminals Defrauding Citizens Advisory
+https://cybercrime.gov.in/pdf/Advisories/ADVISORY%20TAU-ADV-001%20%2822.04.2024%29.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Fake Stock Market Investment Website App Advisory
+
+# I4C report - not an advisory
+https://cybercrime.gov.in/assets/learning-corner/advisory/pdf/Monthly%20Underground%20Banking%20Report.pdf,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",Monthly Underground Banking Report
+
+# I4C portal FAQ candidate - previously returned Page Not Found; verify before use
+https://www.cybercrime.gov.in/Webform/FAQ.aspx,i4c,"MHA permission required for reproduction; downloading and storage permissions require clarification",National Cyber Crime Reporting Portal FAQs - verify URL
