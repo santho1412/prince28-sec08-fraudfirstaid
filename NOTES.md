@@ -1,7 +1,6 @@
+﻿# FraudFirstAid — Project Notes
 
-# FraudFirstAid — Project Notes
-
-## Day 6 Notes
+# Day 6 Notes
 
 ## 1. Database migration evidence
 
@@ -120,7 +119,7 @@ Disabling sequential scans demonstrates that the GIN index `ix_documents_metadat
 
 ---
 
-## Day 4 — Dockerization
+# Day 4 — Dockerization
 
 ## 4. Multi-stage Docker image
 
@@ -457,6 +456,7 @@ The existing 20 records were unchanged after the Compose restart. No duplicate r
 - Readiness returned HTTP 200 after PostgreSQL recovered.
 - The API recovered without a container restart.
 - The loader remained idempotent after restarting the Compose stack.
+
 ## D04 · Docker, Compose and tests
 
 ### Clean-clone verification
@@ -472,7 +472,7 @@ The existing 20 records were unchanged after the Compose restart. No duplicate r
 ### Image and build
 
 - Image size: 301 MB (target: under 400 MB).
-- Runtime user: uid 999 (app), non-root.
+- Runtime user: uid 999 (`app`), non-root.
 - Dependency installation layer was cached after a source-only change because dependency files had not changed.
 - Source-change cache rebuild: 19.6 seconds.
 - Clean-clone Compose build: approximately 30.5 seconds.
@@ -493,9 +493,11 @@ Unit-only coverage:
 ```text
 16 passed, 7 skipped
 TOTAL                                  247     28     40      6    85%
-## D05 · CI/CD and going live
+```
 
-### 1. Live deployment
+# D05 · CI/CD and going live
+
+## 1. Live deployment
 
 - Live URL: https://fraudfirstaid-api.onrender.com
 - API documentation: https://fraudfirstaid-api.onrender.com/docs
@@ -505,7 +507,7 @@ TOTAL                                  247     28     40      6    85%
 - Database: Neon PostgreSQL
 - Container registry: GitHub Container Registry (GHCR)
 
-### 2. Continuous integration
+## 2. Continuous integration
 
 - PR #5: CI workflow merged successfully.
 - CI checks: lint and test; build image.
@@ -513,7 +515,7 @@ TOTAL                                  247     28     40      6    85%
 - Docker image published to GHCR with commit-specific SHA tags.
 - GHCR package made public for Render image deployment.
 
-### 3. Continuous deployment
+## 3. Continuous deployment
 
 - PR #6: CD workflow merged successfully.
 - PR #7: README live URL and badges merged successfully.
@@ -521,7 +523,7 @@ TOTAL                                  247     28     40      6    85%
 - Deployment migrations: successful.
 - Live smoke test: passed.
 
-### 4. Smoke test evidence
+## 4. Smoke test evidence
 
 ```text
 ok   /health -> 200
@@ -530,32 +532,32 @@ ok   /v1/documents?limit=1 -> 200
 Smoke test passed
 ```
 
-### 5. Rollback drill
+## 5. Rollback drill
 
-- Rollback target (PR #5 merge): bd4c436c62970c4a6a189a2ae5d1e5dbb2aa0c4f
+- Rollback target (PR #5 merge): `bd4c436c62970c4a6a189a2ae5d1e5dbb2aa0c4f`
 - Rollback CD workflow: successful.
 - Migration step: skipped as expected.
 - Rollback smoke test: passed.
 
-### 6. Roll-forward drill
+## 6. Roll-forward drill
 
-- Latest main commit: 3f76fe7cc649029a2b06fbb6f64a7d315a4eb1f8
+- Latest main commit: `3f76fe7cc649029a2b06fbb6f64a7d315a4eb1f8`
 - Roll-forward CD workflow: successful.
 - Smoke test: passed.
 - Production restored to the latest application version.
 
-### 7. Why was rollback safe for the database?
+## 7. Why was rollback safe for the database?
 
 The rollback changed the application image, not the database schema. No incompatible database migration was introduced between the rollback target and the latest deployment. Therefore, the older application version could continue using the existing database schema.
 
-### 8. Where my secrets live
+## 8. Where my secrets live
 
-- Neon database connection string: GitHub Secret DATABASE_URL and Render environment variables.
-- Render deploy hook: GitHub Secret RENDER_DEPLOY_HOOK.
-- Live URL: GitHub Actions variable LIVE_URL.
+- Neon database connection string: GitHub Secret `DATABASE_URL` and Render environment variables.
+- Render deploy hook: GitHub Secret `RENDER_DEPLOY_HOOK`.
+- Live URL: GitHub Actions variable `LIVE_URL`.
 - Secrets are not committed to Git or included in the Docker image.
 
-### 9. Monitoring
+## 9. Monitoring
 
 - Monitoring service: UptimeRobot.
 - Monitor: FraudFirstAid API.
@@ -564,7 +566,7 @@ The rollback changed the application image, not the database schema. No incompat
 - Email alerts: configured.
 - README includes CI, Live API and Uptime badges.
 
-### 10. Day 5 completion
+## 10. Day 5 completion
 
 - CI on pull requests: complete.
 - Main branch protection: complete.
@@ -617,12 +619,11 @@ Average = (136 + 151 + 121) / 3 = 136 seconds (2m 16s).
 - CD #11 completed successfully in 14m 16s.
 - This confirms that the production approval gate works as intended.
 
+# D06 · Collecting the corpus
 
-## D06 · Collecting the corpus
-
-- Start target: RBI liability circular + Ombudsman scheme + portal FAQs + 50 advisories
-- Collected today: 66 files, 224 pages, 22.7 MB (from DATASET.md)
-- Doors used: URL list and by hand (manual registration)
+- Start target: RBI liability circular + Ombudsman scheme + portal FAQs + 50 advisories.
+- Collected today: 66 files, 224 pages, 22.7 MB (from DATASET.md).
+- Doors used: URL list and by hand (manual registration).
 
 ### Licence check
 
@@ -642,37 +643,56 @@ Average = (136 + 151 + 121) / 3 = 136 seconds (2m 16s).
 ### Kill and resume
 
 - Run 1: I pressed Ctrl+C after 2 files.
-- Run 2: downloaded=6 skipped=2
-- Run 3: downloaded=0 skipped=8
+- Run 2: downloaded=6 skipped=2.
+- Run 3: downloaded=0 skipped=8.
 - Verified: no `.part` files remained in the test corpus.
 - Test used an isolated temporary folder and did not modify the main corpus.
 
 ### Capacity (from docs/CAPACITY.md)
 
-- Tokens per page, measured: 525
+- Tokens per page, measured: 525.
 - Full corpus: 1.05 M tokens, 3,018 chunks, embedding about Rs 17, vectors 9 MB.
 - The number that surprised me most was the estimated 1.05 million tokens for 2,000 pages. This is an approximation based on four characters per token, not an actual tokenizer measurement.
 
 ### One thing that went wrong today, and how I fixed it
 
 The I4C FAQ's older URL returned HTTP 403. I used the current FAQ page and saved it manually. I also identified an HTML file incorrectly saved with a PDF extension and documented it as an invalid PDF in DATASET.md.
+
 ### Crawl statistics
 
-- Unique URLs in latest manifest: 75
-- Downloaded: 74
-- Failed: 1
-- Total downloaded bytes: 22,701,893 (22.7 MB)
+- Unique URLs in latest manifest: 75.
+- Downloaded: 74.
+- Failed: 1.
+- Total downloaded bytes: 22,701,893 (22.7 MB).
 
 #### By source
 
-- RBI: 8
-- CERT-In: 33
-- I4C: 26
-- Local test: 8
+- RBI: 8.
+- CERT-In: 33.
+- I4C: 26.
+- Local test: 8.
 
 #### By content type
 
-- HTML: 40
-- PDF: 22
-- Unknown: 4
-- Plain text: 8
+- HTML: 40.
+- PDF: 22.
+- Unknown: 4.
+- Plain text: 8.
+
+#### Download size by source
+
+- CERT-In: 33 files, 4.25 MiB.
+- I4C: 25 files, 16.33 MiB.
+- Local test: 8 files, 0.00 MiB.
+- RBI: 8 files, 1.07 MiB.
+
+#### Slowest hosts by average request time
+
+- `www.rbi.org.in`: 0.872 seconds average (6 requests).
+- `cybercrime.gov.in`: 0.777 seconds average (21 requests).
+- `www.cert-in.org.in`: 0.319 seconds average (32 requests).
+- `rbidocs.rbi.org.in`: 0.250 seconds average (1 request).
+
+#### Retry statistics
+
+- 1 URL required more than one attempt.

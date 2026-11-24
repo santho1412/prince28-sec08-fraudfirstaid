@@ -87,6 +87,15 @@ async def test_downloads_files_and_records_where_they_came_from(tmp_path):
     assert len(record["sha256"]) == 64
 
 
+async def test_download_records_elapsed_time(tmp_path):
+    counts = await FakeSite().run(make_sources(1), tmp_path)
+
+    assert counts["downloaded"] == 1
+    record = manifest(tmp_path)[0]
+    assert isinstance(record["elapsed_seconds"], float)
+    assert record["elapsed_seconds"] > 0
+
+
 async def test_second_run_downloads_nothing(tmp_path):
     site = FakeSite()
     await site.run(make_sources(5), tmp_path)

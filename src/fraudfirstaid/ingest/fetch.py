@@ -355,7 +355,12 @@ async def fetch_one(
             await gate.wait(host, crawl_delay)
             try:
                 async with asyncio.timeout(ATTEMPT_TIMEOUT):
+                    started = time.monotonic()
                     fields = await _download(client, src, root, raw_dir, previous)
+                    fields["elapsed_seconds"] = max(
+                        time.monotonic() - started,
+                        1e-9,
+                    )
 
                 if fields.pop("not_modified", False):
                     return (
