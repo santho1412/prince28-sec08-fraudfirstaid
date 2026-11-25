@@ -7,10 +7,15 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.exc import SQLAlchemyError
 
-from fraudfirstaid.api.deps import get_document_repository
+from fraudfirstaid.api.deps import (
+    get_document_repository,
+    get_gateway,
+    get_usage_repo,
+)
 from fraudfirstaid.api.main import create_app
 from fraudfirstaid.config import Settings
 from fraudfirstaid.db.session import get_db
+from fraudfirstaid.llm.gateway import FakeLLM, LLMGateway
 
 SAMPLE_DOCUMENTS: list[dict[str, Any]] = [
     {
@@ -85,6 +90,23 @@ class FakeDocumentRepository:
         )
 
 
+class FakeUsage:
+    """Fake usage repository for API unit tests."""
+
+    async def by_day(self, days: int = 7) -> list[dict[str, Any]]:
+        return [
+            {
+                "day": "2026-11-25",
+                "calls": 3,
+                "errors": 1,
+                "fallbacks": 1,
+                "tokens_in": 300,
+                "tokens_out": 120,
+                "cost_inr": 0.0642,
+            }
+        ]
+
+
 @pytest.fixture
 def settings() -> Settings:
     """Provide isolated test settings."""
@@ -105,8 +127,9 @@ def db_state() -> dict[str, bool]:
 def client(
     settings: Settings,
     db_state: dict[str, bool],
+    llm: FakeLLM,
 ) -> Iterator[TestClient]:
-    """Create an API client with fake database dependencies."""
+    """Create an API client with fake dependencies."""
     app = create_app(settings)
 
     async def override_get_db():
@@ -117,8 +140,16 @@ def client(
     def override_get_document_repository() -> FakeDocumentRepository:
         return FakeDocumentRepository()
 
+    def override_get_gateway() -> LLMGateway:
+        return LLMGateway([llm])
+
+    def override_get_usage_repo() -> FakeUsage:
+        return FakeUsage()
+
     app.dependency_overrides[get_db] = override_get_db
     app.dependency_overrides[get_document_repository] = override_get_document_repository
+    app.dependency_overrides[get_gateway] = override_get_gateway
+    app.dependency_overrides[get_usage_repo] = override_get_usage_repo
 
     with TestClient(app) as test_client:
         yield test_client

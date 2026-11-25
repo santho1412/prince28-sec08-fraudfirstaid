@@ -35,6 +35,7 @@ COPY --chown=app:app alembic.ini ./
 COPY --chown=app:app alembic ./alembic
 COPY --chown=app:app scripts ./scripts
 COPY --chown=app:app data/sample_records.json ./data/sample_records.json
+COPY --chown=app:app prompts ./prompts
 
 ARG GIT_SHA=dev
 

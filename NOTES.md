@@ -787,3 +787,87 @@ The I4C FAQ's older URL returned HTTP 403. I used the current FAQ page and saved
 
 - The Ruff formatting check failed because `scripts/compare_parsers.py` was not formatted.
 - I fixed it by running `uv run ruff format scripts/compare_parsers.py` and reran the lint checks successfully.
+
+# D08 — Task 5: Break it on purpose
+
+## 1. English vs Tamil token comparison
+
+| Test | Input tokens |
+|---|---:|
+| Baseline: Hi | 187 |
+| English refund question | 195 |
+| Tamil refund question | 203 |
+
+- English message tokens: 195 - 187 = 8.
+- Tamil message tokens: 203 - 187 = 16.
+- Tamil-to-English token ratio: 16 / 8 = 2x.
+- The Tamil message required twice as many input tokens as the English message in this test.
+
+
+## 2. Ask what it can't know
+
+| Test | Observed result |
+|---|---|
+| RBI customer liability | Hallucination: invented a ₹5,000–₹25,000 cap for customer negligence |
+| Scammer account frozen? | Correctly admitted it did not know |
+| Unrelated cricket question | Correctly declined as outside product scope |
+| First-hour UPI fraud steps | Gemini stream ended early; incomplete answer |
+| Evidence to preserve | Plausible answer; checked against project documentation |
+
+
+## 3. Primary failure, fallback and circuit breaker
+
+- Changed primary model to gemini-no-such-model.
+- First four calls successfully used Groq with fallback=YES.
+- After waiting 30 seconds, the recovery test still used Groq.
+- Restored gemini-3.5-flash-lite and restarted the server.
+- Final test returned Gemini with fallback=no.
+- Groq fallback responses contained inconsistent RBI reporting deadlines (24, 30 and 48 hours), demonstrating factual reliability problems.
+
+
+## 4. Read the bill and verify database records
+
+Usage API for 2026-11-25:
+- Calls: 21
+- Errors: 5
+- Fallbacks: 5
+- Input tokens: 3,486
+- Output tokens: 2,933
+- Estimated cost: Rs 0.3781
+
+Neon SQL verification:
+- Failed Gemini attempts recorded with status=error.
+- Failed calls show zero tokens and zero cost.
+- Successful Groq fallback calls recorded with fallback_used=true.
+- Restored Gemini call recorded with status=ok.
+- Interrupted Gemini stream recorded as an error.
+
+
+### D08 · LLM gateway
+- Primary: gemini-3.5-flash-lite (Gemini) · fallback: openai/gpt-oss-20b (Groq)
+- First question on my laptop: first words 3.87 s, total 5.88 s, tokens in 200 / out 137, cost Rs 0.038238
+- Live URL: pending measurement
+
+### Tokens: English against Tamil
+| Message | tokens in |
+|---|---:|
+| "Hi" (baseline: mostly my system prompt) | 187 |
+| English refund explanation | 195 |
+| Same question in Tamil | 203 |
+- Message-only comparison: English 8 tokens, Tamil 16 tokens. Tamil needs about 2 times the tokens.
+
+### What the model does without my documents
+- Question 6 ("Has the scammer's account been frozen yet?"): it admitted uncertainty: "I am not sure if the scammer's account has been frozen yet."
+- A detail it got wrong or invented: RBI liability answer → it claimed OTP/PIN-sharing customer liability was capped at Rs 5,000–Rs 25,000 based on account type → this claim was inaccurate.
+- Off-topic question: declined in one sentence: "This question is outside this product's subject, which is guiding victims of online financial fraud through the first hours after an incident."
+
+### Fallback and circuit breaker
+- With the primary broken: provider Groq, fallback YES, first words after 4.53 s
+- Four fallback calls were tested. Exact question number when Gemini error logs stopped appearing: not recorded.
+
+### The bill
+- /v1/usage today: calls 21, errors 5, fallbacks 5, cost Rs 0.3781
+- Average per answered question: Rs 0.0236 (16 successful calls)
+
+### One thing that went wrong today, and how I fixed it
+- An invalid Gemini model caused an HTTP 404. I restored the correct configured model, then verified that Gemini worked again and Groq fallback worked when the primary was unavailable.
