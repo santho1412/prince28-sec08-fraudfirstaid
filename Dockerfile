@@ -12,13 +12,11 @@ ENV UV_COMPILE_BYTECODE=1 \
 
 WORKDIR /app
 
-# 1) Dependencies only
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-install-project --no-dev
 
-# 2) Application code
 COPY . /app
 
 RUN --mount=type=cache,target=/root/.cache/uv \
@@ -32,14 +30,12 @@ RUN groupadd --system app && \
 
 WORKDIR /app
 
-# Copy only runtime requirements
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
 COPY --chown=app:app alembic.ini ./
 COPY --chown=app:app alembic ./alembic
 COPY --chown=app:app scripts ./scripts
-COPY --chown=app:app data ./data
+COPY --chown=app:app data/sample_records.json ./data/sample_records.json
 
-# Embed the Git commit used to build this image
 ARG GIT_SHA=dev
 
 ENV PATH="/app/.venv/bin:$PATH" \
