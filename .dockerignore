@@ -41,3 +41,5 @@ NOTES.md
 *.log
 tmp/
 temp/
+
+data/raw/
