@@ -485,15 +485,9 @@ source = { editable = "." }
 dependencies = [
     { name = "alembic" },
     { name = "asyncpg" },
-    { name = "boto3" },
     { name = "fastapi" },
-    { name = "httpx" },
-    { name = "protego" },
     { name = "pydantic-settings" },
-    { name = "pymupdf" },
-    { name = "pypdf" },
     { name = "sqlalchemy", extra = ["asyncio"] },
-    { name = "trafilatura" },
     { name = "uvicorn" },
 ]
 
@@ -507,20 +501,22 @@ dev = [
     { name = "pytest-cov" },
     { name = "ruff" },
 ]
+ingestion = [
+    { name = "boto3" },
+    { name = "httpx" },
+    { name = "protego" },
+    { name = "pymupdf" },
+    { name = "pypdf" },
+    { name = "trafilatura" },
+]
 
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = ">=1.20.1" },
     { name = "asyncpg", specifier = ">=0.32.0" },
-    { name = "boto3", specifier = ">=1.44.10" },
     { name = "fastapi", specifier = ">=0.165.0" },
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "protego", specifier = ">=0.7.0" },
     { name = "pydantic-settings", specifier = ">=2.16.3" },
-    { name = "pymupdf", specifier = ">=1.26,<2" },
-    { name = "pypdf", specifier = ">=7.1.1" },
     { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.1.9" },
-    { name = "trafilatura", specifier = ">=2.4.0" },
     { name = "uvicorn", specifier = ">=0.54.0" },
 ]
 
@@ -533,6 +529,14 @@ dev = [
     { name = "pytest-asyncio", specifier = ">=1.5.0" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
     { name = "ruff", specifier = ">=0.17.5" },
+]
+ingestion = [
+    { name = "boto3", specifier = ">=1.44.10" },
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "protego", specifier = ">=0.7.0" },
+    { name = "pymupdf", specifier = ">=1.26,<2" },
+    { name = "pypdf", specifier = ">=7.1.1" },
+    { name = "trafilatura", specifier = ">=2.4.0" },
 ]
 
 [[package]]
