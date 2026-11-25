@@ -13,7 +13,6 @@ permissions:
   contents: read
 
 concurrency:
-  # A newer push to the same branch cancels the older run.
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
@@ -49,7 +48,7 @@ jobs:
           version: "0.11.32"
           enable-cache: true
 
-      - run: uv sync --locked
+      - run: uv sync --locked --all-groups
 
       - name: Run pre-commit hooks
         run: uv run pre-commit run --all-files
