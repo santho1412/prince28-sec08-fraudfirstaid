@@ -871,3 +871,11 @@ Neon SQL verification:
 
 ### One thing that went wrong today, and how I fixed it
 - An invalid Gemini model caused an HTTP 404. I restored the correct configured model, then verified that Gemini worked again and Groq fallback worked when the primary was unavailable.
+
+### Live deployment verification
+- Live URL: https://fraudfirstaid-api.onrender.com
+- First request: first words 6.01 s, total 7.74 s, Groq fallback
+- Second (awake) request: first words 2.45 s, total 3.82 s, Groq fallback
+- /v1/usage: 25 calls, 7 errors, 7 fallbacks, 4,008 input tokens, 3,608 output tokens, cost Rs 0.401
+- Average cost per successful call: Rs 0.0223
+- Health endpoint: status ok
