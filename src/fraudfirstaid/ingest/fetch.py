@@ -49,6 +49,7 @@ KNOWN_EXT = {
 EXT_BY_TYPE = {
     "application/pdf": ".pdf",
     "text/html": ".html",
+    "application/xhtml+xml": ".html",
     "application/json": ".json",
     "text/plain": ".txt",
     "text/markdown": ".md",
@@ -99,11 +100,46 @@ def file_stem(url: str) -> str:
     return f"{slug(name)}-{suffix}"
 
 
-def pick_ext(url: str, content_type: str) -> str:
+def _content_extension(
+    url: str,
+    content_type: str,
+    content_prefix: bytes = b"",
+) -> str:
+    """Choose an extension using file signatures before server metadata or URL."""
+
+    prefix = content_prefix.lstrip(b"\xef\xbb\xbf \t\r\n").lower()
+
+    if prefix.startswith(b"%pdf-"):
+        return ".pdf"
+
+    if (
+        prefix.startswith(b"<!doctype html")
+        or prefix.startswith(b"<html")
+        or prefix.startswith(b"<head")
+        or prefix.startswith(b"<body")
+        or b"<html" in prefix[:512]
+    ):
+        return ".html"
+
+    media_type = content_type.split(";")[0].strip().lower()
+    detected = EXT_BY_TYPE.get(media_type)
+    if detected:
+        return detected
+
     suffix = Path(urlsplit(url).path).suffix.lower()
     if suffix in KNOWN_EXT:
         return suffix
-    return EXT_BY_TYPE.get(content_type.split(";")[0].strip().lower(), ".bin")
+
+    return ".bin"
+
+
+def pick_ext(
+    url: str,
+    content_type: str,
+    content_prefix: bytes = b"",
+) -> str:
+    """Return the best extension based on content, response type, and URL."""
+    return _content_extension(url, content_type, content_prefix)
 
 
 def backoff_delay(attempt: int, *, base: float = 1.0, cap: float = 60.0) -> float:
@@ -285,24 +321,33 @@ async def _download(
 
         content_type = response.headers.get("Content-Type", "")
         etag = response.headers.get("ETag")
-        name = file_stem(src.url) + pick_ext(src.url, content_type)
-        target = raw_dir / slug(src.source) / name
-        target.parent.mkdir(parents=True, exist_ok=True)
-        part = target.with_name(name + ".part")
 
+        directory = raw_dir / slug(src.source)
+        directory.mkdir(parents=True, exist_ok=True)
+
+        stem = file_stem(src.url)
+        part = directory / f"{stem}.part"
         digest = hashlib.sha256()
         size = 0
+        prefix = bytearray()
 
         try:
             with part.open("wb") as handle:
                 async for chunk in response.aiter_bytes():
+                    if len(prefix) < 1024:
+                        prefix.extend(chunk[: 1024 - len(prefix)])
+
                     size += len(chunk)
                     if size > MAX_BYTES:
                         raise DownloadError(f"larger than {MAX_BYTES // 2**20} MB")
+
                     digest.update(chunk)
                     handle.write(chunk)
 
+            extension = pick_ext(src.url, content_type, bytes(prefix))
+            target = directory / f"{stem}{extension}"
             part.replace(target)
+
         finally:
             part.unlink(missing_ok=True)
 
