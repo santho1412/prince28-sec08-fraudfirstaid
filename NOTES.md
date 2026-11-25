@@ -696,3 +696,94 @@ The I4C FAQ's older URL returned HTTP 403. I used the current FAQ page and saved
 #### Retry statistics
 
 - 1 URL required more than one attempt.
+
+## Day 7 — Task 3: Parsing observations
+
+- HTML parsing with Trafilatura extracts readable advisory content.
+- Some HTML pages still contain navigation menus, accessibility links, and footer text.
+- Parsed HTML pages currently have empty heading paths (`[]`).
+- Two scanned PDFs failed with `no_text_layer`; OCR may be needed.
+- These are known parsing-quality issues to investigate in a later improvement pass.
+
+- Recovered the official Digital Arrest Advisory PDF from the I4C learning-corner URL; verified 2 pages and approximately 3,000 extracted characters.
+- The older Digital Arrest PDF endpoint and the Fake Stock Market advisory endpoint return invalid content; the latter returns the Cybercrime Portal HTML shell instead of a PDF.
+- OCR was attempted on the remaining problematic PDFs but returned empty text; these remain source-quality limitations.
+
+## Day 7 — Task 4: Full corpus parsing and failure handling
+
+- Full corpus parsing completed and rerun; already-parsed documents were skipped.
+- Recovered the official I4C Digital Arrest Advisory from the learning-corner PDF URL.
+- Verified the recovered advisory in Neon: 2 pages and 2,955 extracted characters.
+- Retried failed files; 2 no_text_layer failures remain.
+- Known gaps: the old Digital Arrest PDF is damaged, and the old FAQ and Fake Stock Market advisory endpoints return the portal HTML shell instead of the actual content.
+- OCR was attempted on the damaged PDF but did not recover text.
+- Remaining source-quality failures are documented rather than silently treated as successful parses.
+
+## D07 — Parser comparison
+
+<!-- parsers:start -->
+
+| File | Parsers (A / B) | Pages | A found | B found | Time (A / B) | Better, why |
+|---|---|---|---|---|---|---|
+| monthly-underground-banking-report-61fa0768.pdf | PyMuPDF / pypdf | 33 | 29,058 chars, 72 headings, 12 tables | 22,912 chars, 0 headings, 0 tables | 11.16 s / 1.15 s | |
+| National_Cyber_Crime_Portal_FAQ.pdf | PyMuPDF / pypdf | 3 | 28,609 chars, 0 headings, 2 tables | 2,490 chars, 0 headings, 0 tables | 1.70 s / 0.23 s | |
+| faqs-on-cybersecuritydirections-may2022-5be59b6c | PyMuPDF / pypdf | 28 | 43,733 chars, 120 headings, 0 tables | 47,732 chars, 0 headings, 0 tables | 2.23 s / 0.46 s | |
+| whatsapp-web-account-60b0fdfb.pdf | PyMuPDF / pypdf | 4 | 3,464 chars, 12 headings, 0 tables | 3,132 chars, 0 headings, 0 tables | 0.43 s / 0.14 s | |
+| Advisory_on_digital.pdf | PyMuPDF / pypdf | - | FAILED: no_text_layer | FAILED: no_text_layer | 0.03 s / 0.15 s | |
+| advisory-regarding-fake-9971fd8a.pdf | PyMuPDF / pypdf | 1 | 1,671 chars, 11 headings, 0 tables | 1,617 chars, 0 headings, 0 tables | 0.04 s / 0.06 s | |
+| cybercriminals-tampering-with-b1b677ca.pdf | PyMuPDF / pypdf | 2 | 3,375 chars, 18 headings, 0 tables | 3,317 chars, 0 headings, 0 tables | 0.23 s / 0.14 s | |
+| fraudsters-using-army-personnel-d2f95144.pdf | PyMuPDF / pypdf | 2 | 3,813 chars, 21 headings, 0 tables | 3,731 chars, 0 headings, 0 tables | 0.30 s / 0.17 s | |
+| cybercriminals-using-caller-2628ec1b.pdf | PyMuPDF / pypdf | 2 | 3,195 chars, 18 headings, 0 tables | 3,139 chars, 0 headings, 0 tables | 0.22 s / 0.13 s | |
+| advisory-on-digital-e557ee2e.pdf | PyMuPDF / pypdf | 2 | 2,956 chars, 7 headings, 0 tables | 2,992 chars, 0 headings, 0 tables | 0.26 s / 0.10 s | |
+
+<!-- parsers:start -->
+
+## D07 — Parser comparison
+
+| File | Parsers (A / B) | Pages | A found | B found | Time (A / B) | Better, why |
+|---|---|---:|---|---|---|---|
+| monthly-underground-banking-report-61fa0768.pdf | PyMuPDF / pypdf | 33 | 29,058 chars, 72 headings, 12 tables | 22,912 chars, 0 headings, 0 tables | 11.16 s / 1.15 s | PyMuPDF — preserves 72 headings and 12 tables; pypdf finds neither. |
+| National_Cyber_Crime_Portal_FAQ.pdf | PyMuPDF / pypdf | 3 | 28,609 chars, 0 headings, 2 tables | 2,490 chars, 0 headings, 0 tables | 1.70 s / 0.23 s | Neither — the source is HTML portal content saved with a PDF extension; extracted content contains duplicated FAQ text and navigation fragments. |
+| faqs-on-cybersecuritydirections-may2022-5be59b6c | PyMuPDF / pypdf | 28 | 43,733 chars, 120 headings, 0 tables | 47,732 chars, 0 headings, 0 tables | 2.23 s / 0.46 s | PyMuPDF for structure — identifies 120 headings; pypdf extracts more characters but no headings. |
+| whatsapp-web-account-60b0fdfb.pdf | PyMuPDF / pypdf | 4 | 3,464 chars, 12 headings, 0 tables | 3,132 chars, 0 headings, 0 tables | 0.43 s / 0.14 s | PyMuPDF — extracts more characters and identifies 12 headings. |
+| Advisory_on_digital.pdf | PyMuPDF / pypdf | - | FAILED: no_text_layer | FAILED: no_text_layer | 0.03 s / 0.15 s | Neither — damaged source; both parsers fail to extract text. |
+| advisory-regarding-fake-9971fd8a.pdf | PyMuPDF / pypdf | 1 | 1,671 chars, 11 headings, 0 tables | 1,617 chars, 0 headings, 0 tables | 0.04 s / 0.06 s | PyMuPDF — extracts slightly more text and identifies 11 headings. |
+| cybercriminals-tampering-with-b1b677ca.pdf | PyMuPDF / pypdf | 2 | 3,375 chars, 18 headings, 0 tables | 3,317 chars, 0 headings, 0 tables | 0.23 s / 0.14 s | PyMuPDF — extracts slightly more text and identifies 18 headings. |
+| fraudsters-using-army-personnel-d2f95144.pdf | PyMuPDF / pypdf | 2 | 3,813 chars, 21 headings, 0 tables | 3,731 chars, 0 headings, 0 tables | 0.30 s / 0.17 s | PyMuPDF — extracts slightly more text and identifies 21 headings. |
+| cybercriminals-using-caller-2628ec1b.pdf | PyMuPDF / pypdf | 2 | 3,195 chars, 18 headings, 0 tables | 3,139 chars, 0 headings, 0 tables | 0.22 s / 0.13 s | PyMuPDF — extracts slightly more text and identifies 18 headings. |
+| advisory-on-digital-e557ee2e.pdf | PyMuPDF / pypdf | 2 | 2,956 chars, 7 headings, 0 tables | 2,992 chars, 0 headings, 0 tables | 0.26 s / 0.10 s | PyMuPDF for structure — identifies 7 headings; pypdf extracts slightly more characters but no headings. |
+
+<!-- parsers:end -->
+
+### D07 · Parsing my corpus
+
+- Files in the manifest: **76 URLs** · downloaded: **75** · parsed: **70** · failed: **5** · pages in Postgres: **200**
+- Parsing coverage: **93.3%** of downloaded files (70 / 75)
+
+### Failures by reason
+
+| Reason | Files | What I did |
+|---|---:|---|
+| empty | 3 | Investigated the source URLs. They returned portal HTML instead of the expected document content. Documented these source-quality issues. |
+| no_text_layer | 2 | Attempted OCR using Tesseract. The problematic PDFs were damaged or contained invalid content; OCR did not recover text. |
+
+- The one I fixed: file `advisorytau-adv-003digitalarrest06-03-2025-60c6a2e6.pdf`, reason `no_text_layer`, fix: identified that the old endpoint returned an HTML portal shell instead of a valid PDF; recovered the official Digital Arrest Advisory from the I4C learning-corner PDF URL and successfully parsed it into 2 pages with 2,955 characters.
+
+### What I saw when I read my parsed pages
+
+- A page where the heading path is right (document, page, path): `MODUS OPERANDI`, page 2, heading path `["arrest"]`.
+- Something that came out wrong (document, page, what): `Cybercrime Portal`, page 2, FAQ questions were duplicated across table columns and heading paths were empty.
+- A table: `T-397 – Monthly Underground Banking Report`, page 1: extracted as a Markdown grid with table rows and columns.
+
+### My parser choice
+
+- For PDFs I use **PyMuPDF** because:
+  - The Monthly Underground Banking Report produced 29,058 characters, 72 headings and 12 tables, compared with pypdf's 22,912 characters, 0 headings and 0 tables.
+  - PyMuPDF also identified 7 headings in the recovered Digital Arrest Advisory, while pypdf identified none.
+  - PyMuPDF is slower in the report comparison (11.16 seconds versus 1.15 seconds), but its structural extraction is more useful for this project.
+- A kind of document in my corpus that neither parser handles well: damaged PDFs and HTML portal pages incorrectly saved or labelled as PDFs.
+
+### One thing that went wrong today, and how I fixed it
+
+- The Ruff formatting check failed because `scripts/compare_parsers.py` was not formatted.
+- I fixed it by running `uv run ruff format scripts/compare_parsers.py` and reran the lint checks successfully.

@@ -386,7 +386,26 @@ def test_file_names_are_stable_and_safe():
     assert stem == fetch.file_stem(url)
     assert stem != fetch.file_stem(url + "x")
     assert all(ch.isalnum() or ch == "-" for ch in stem)
-    assert fetch.pick_ext("https://example.org/a/b.PDF", "text/html") == ".pdf"
+
+    assert fetch.pick_ext("https://example.org/a/b.PDF", "text/html") == ".html"
+    assert fetch.pick_ext("https://example.org/a/b.PDF", "application/pdf") == ".pdf"
+    assert (
+        fetch.pick_ext(
+            "https://example.org/a/b.PDF",
+            "application/pdf",
+            b"<!doctype html><html>",
+        )
+        == ".html"
+    )
+    assert (
+        fetch.pick_ext(
+            "https://example.org/a/b.html",
+            "text/html",
+            b"%PDF-1.7",
+        )
+        == ".pdf"
+    )
+
     assert fetch.pick_ext("https://example.org/view.aspx?id=7", "application/pdf") == ".pdf"
     assert fetch.pick_ext("https://example.org/thing", "weird/type") == ".bin"
 
