@@ -2,7 +2,10 @@
 
 import json
 import logging
+from contextvars import ContextVar
 from datetime import UTC, datetime
+
+request_id_ctx: ContextVar[str] = ContextVar("request_id", default="")
 
 
 class JsonFormatter(logging.Formatter):
@@ -18,9 +21,11 @@ class JsonFormatter(logging.Formatter):
 
         if record.exc_info:
             log_data["exception"] = self.formatException(record.exc_info)
+
         for key in ("records", "request_id", "duration_seconds"):
             if hasattr(record, key):
                 log_data[key] = getattr(record, key)
+
         return json.dumps(log_data)
 
 
