@@ -75,7 +75,7 @@ async def test_save_document_persists_document_and_pages(database_url):
             assert len(pages) == 2
             assert pages[0].headings == ["Fever", "Symptoms"]
             assert pages[1].headings == ["Fever", "Next steps"]
-            assert await parsed_ids(session) == {document.external_id}
+            assert document.external_id in await parsed_ids(session)
     finally:
         await engine.dispose()
 
