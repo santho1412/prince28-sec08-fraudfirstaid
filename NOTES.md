@@ -879,3 +879,54 @@ Neon SQL verification:
 - /v1/usage: 25 calls, 7 errors, 7 fallbacks, 4,008 input tokens, 3,608 output tokens, cost Rs 0.401
 - Average cost per successful call: Rs 0.0223
 - Health endpoint: status ok
+
+## D09 · Prompt versions compared
+
+<!-- prompts:start -->
+
+| Prompt version | Correct | Accuracy | Invalid replies | Avg tokens in |
+|---|---|---|---|---|
+| classify_v1 | 17/20 | 85% | 0 | 48 |
+| classify_v2 | 19/20 | 95% | 0 | 277 |
+| classify_v3 | 19/20 | 95% | 0 | 458 |
+| classify_v4 | 20/20 | 100% | 0 | 491 |
+
+<!-- prompts:end -->
+
+### Why v4 improved
+- v3 scored 19/20. It misclassified testset line 20 because the question combined a general RBI zero-liability rule with a request to determine whether the rule meant the user's own recent loss must be refunded.
+- v4 added one explicit rule: questions combining general policy with a request about the user's own fraud case are classified as personal.
+- v4 scored 20/20 on the 20-question testset.
+- No remaining incorrect classifications or LEAK warnings were reported.
+
+## D09 · Metadata extraction v2 trial
+
+- Five documents with parsed page content processed: 5 successful, 0 failed, 1 repaired.
+- Years, issuers, reference numbers and summaries were generally consistent with source text.
+- Quality issue: `scam_type` sometimes includes general cybersecurity threats such as DDoS and malware, even when the source is not describing financial scams. Restrict this field to explicitly described fraud or scam types.
+- Empty `deadline_days` values were appropriate where no deadline expressed in days was found.
+- Trial cost: Rs 0.6316.
+
+### D09 · Prompts and structured output
+
+- My best router prompt: classify_v__ with ___ / 20
+- What I changed in v4, and what happened to the score:
+- The question my best version still gets wrong (line, wanted, got), and why I think so:
+- A label in my test set that I changed after seeing the results (or "none"):
+- Input tokens per question: v1 ___ , best version ___ . Is the extra accuracy worth it?
+
+### My contract (DocMeta)
+
+- Fields I kept from my project card:
+- Fields I deleted, and why they make no sense per document:
+- The field I tightened, and how:
+
+### Extraction run
+
+- Prompt version: extract_v__ · documents: ___ ok, ___ repaired, ___ failed (of ___ parsed)
+- Not finished? Why, and how many are left:
+- Most common failure reason, and what I did about it:
+- A record that was valid but wrong (document, field, what it said, what is true):
+- Cost at list price: Rs ___ in total, Rs ___ per document
+
+### One thing that went wrong today, and how I fixed it

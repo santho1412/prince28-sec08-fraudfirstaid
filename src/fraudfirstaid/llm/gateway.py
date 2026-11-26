@@ -21,15 +21,15 @@ from fraudfirstaid.logging_setup import request_id_ctx
 
 logger = logging.getLogger("fraudfirstaid.llm")
 
-# US dollars per 1 million tokens (input, output).
+# US dollars per 1 million tokens (input, output). List prices read on 22 Nov 2026:
+# check the providers' pricing pages and update this table when they change.
 PRICES_USD = {
     "gemini-3.8-flash": (0.75, 3.75),
     "gemini-3.5-flash-lite": (0.30, 2.50),
     "openai/gpt-oss-20b": (0.075, 0.30),
     "openai/gpt-oss-120b": (0.15, 0.60),
 }
-MAX_WAIT = 20.0
-MAX_OUTPUT_TOKENS = 256
+MAX_WAIT = 20.0  # never sleep longer than this between two attempts
 
 Message = dict[str, str]
 Recorder = Callable[[dict], Awaitable[None]]
@@ -71,7 +71,7 @@ class LLMResult:
 
 
 def cost_inr(model: str, tokens_in: int, tokens_out: int, usd_inr: float) -> float:
-    """What this call costs at list price (0 for models missing from the table)."""
+    """What this call costs at list price, in rupees (0 for models missing from the table)."""
     price_in, price_out = PRICES_USD.get(model, (0.0, 0.0))
     return round((tokens_in * price_in + tokens_out * price_out) / 1_000_000 * usd_inr, 6)
 
@@ -97,17 +97,21 @@ class OpenAICompatProvider:
         self.name, self.model = name, model
         self._url = base_url.rstrip("/") + "/chat/completions"
         self._headers = {"Authorization": f"Bearer {api_key}"}
+        # 10 s to connect; `timeout` seconds of silence at most while the answer arrives
         self._client = client or httpx.AsyncClient(timeout=httpx.Timeout(timeout, connect=10.0))
 
-    def _body(self, messages: list[Message], temperature: float, stream: bool) -> dict:
-        body = {
-            "model": self.model,
-            "messages": messages,
-            "temperature": temperature,
-            "max_tokens": MAX_OUTPUT_TOKENS,
-        }
+    def _body(
+        self,
+        messages: list[Message],
+        temperature: float,
+        stream: bool,
+        response_format: dict | None = None,
+    ) -> dict:
+        body = {"model": self.model, "messages": messages, "temperature": temperature}
         if stream:
             body |= {"stream": True, "stream_options": {"include_usage": True}}
+        if response_format:  # ask the provider itself to produce JSON (Day 9)
+            body["response_format"] = response_format
         return body
 
     @staticmethod
@@ -116,17 +120,25 @@ class OpenAICompatProvider:
         wait = response.headers.get("retry-after", "")
         return LLMError(
             f"HTTP {code}: {response.text[:200]}",
-            retryable=code in {408, 429} or code >= 500,
+            retryable=code in {408, 429} or code >= 500,  # 400, 401, 404 will not heal
             retry_after=float(wait) if wait.replace(".", "", 1).isdigit() else None,
         )
 
     @staticmethod
     def _network_error(exc: httpx.TransportError) -> LLMError:
+        # A timeout has already used up the waiting time: move to the next provider instead
+        # of waiting again. A refused or dropped connection fails fast: one more try is cheap.
         timed_out = isinstance(exc, httpx.TimeoutException)
         return LLMError(type(exc).__name__, retryable=not timed_out)
 
-    async def generate(self, messages: list[Message], *, temperature: float = 0.2) -> Reply:
-        body = self._body(messages, temperature, stream=False)
+    async def generate(
+        self,
+        messages: list[Message],
+        *,
+        temperature: float = 0.2,
+        response_format: dict | None = None,
+    ) -> Reply:
+        body = self._body(messages, temperature, False, response_format)
         try:
             response = await self._client.post(self._url, headers=self._headers, json=body)
         except httpx.TransportError as exc:
@@ -142,7 +154,7 @@ class OpenAICompatProvider:
         self, messages: list[Message], usage: Reply, *, temperature: float = 0.2
     ) -> AsyncIterator[str]:
         """Yield the answer piece by piece (server-sent events). Fills `usage` at the end."""
-        body = self._body(messages, temperature, stream=True)
+        body = self._body(messages, temperature, True)
         try:
             async with self._client.stream(
                 "POST", self._url, headers=self._headers, json=body
@@ -167,25 +179,32 @@ class OpenAICompatProvider:
                         piece = (choice.get("delta") or {}).get("content")
                         if piece:
                             yield piece
-                if not finished:
+                if not finished:  # the connection closed before the provider said "done"
                     raise LLMError("the stream ended early", retryable=True)
         except httpx.TransportError as exc:
             raise self._network_error(exc) from exc
 
 
 class FakeLLM:
-    """A scripted provider for tests: no network, no bill."""
+    """A scripted provider for tests: no network, no bill.
+
+    `script` holds what each call does, in order: a string is the answer, an exception is
+    raised, and ("partial", error) streams half an answer and then fails. `seen` remembers
+    what the model was asked, so a test can check the messages and options.
+    """
 
     def __init__(self, name: str = "fake", model: str = "fake-1", script: list | None = None):
         self.name, self.model = name, model
         self.script = list(script or [])
         self.calls = 0
+        self.seen: list[dict] = []
 
     def _next(self) -> object:
         self.calls += 1
         return self.script.pop(0) if self.script else "A fake answer."
 
-    async def generate(self, messages: list[Message], *, temperature: float = 0.2) -> Reply:
+    async def generate(self, messages: list[Message], **options) -> Reply:
+        self.seen.append({"messages": messages, **options})
         item = self._next()
         if isinstance(item, Exception):
             raise item
@@ -197,7 +216,7 @@ class FakeLLM:
         item = self._next()
         if isinstance(item, Exception):
             raise item
-        error = item[1] if isinstance(item, tuple) else None
+        error = item[1] if isinstance(item, tuple) else None  # ("partial", error)
         words = ("Half an answer" if error else str(item)).split()
         for word in words:
             yield word + " "
@@ -207,7 +226,11 @@ class FakeLLM:
 
 
 class CircuitBreaker:
-    """After `threshold` failures in a row, stop calling for `cooldown` seconds."""
+    """After `threshold` failures in a row, stop calling for `cooldown` seconds.
+
+    closed = calls go through. open = calls are skipped at once. After the cooldown one
+    test call is let through (half-open): success closes the circuit, failure reopens it.
+    """
 
     def __init__(self, threshold: int = 3, cooldown: float = 30.0, clock=time.monotonic) -> None:
         self.threshold, self.cooldown, self._clock = threshold, cooldown, clock
@@ -265,10 +288,11 @@ class LLMGateway:
         if self._recorder:
             try:
                 await self._recorder(row)
-            except Exception:
+            except Exception:  # a broken logbook must never break an answer
                 logger.exception("could not record the llm call")
 
     def _result(self, provider, messages, reply: Reply, started: float, attempts: int, index: int):
+        # Providers report token counts. If one does not, estimate from the text lengths.
         prompt = " ".join(message["content"] for message in messages)
         tokens_in = reply.tokens_in or estimate_tokens(prompt)
         tokens_out = reply.tokens_out or estimate_tokens(reply.text)
@@ -298,6 +322,7 @@ class LLMGateway:
     async def generate(
         self, messages: list[Message], *, purpose: str = "chat", prompt_version: str = "", **options
     ) -> LLMResult:
+        """Ask the first healthy provider; retry what can heal; fall back to the next one."""
         started, problems = self._clock(), []
         for index, provider in enumerate(self.providers):
             breaker = self.breakers[provider.name]
@@ -329,6 +354,7 @@ class LLMGateway:
     async def stream(
         self, messages: list[Message], *, purpose: str = "chat", prompt_version: str = "", **options
     ) -> AsyncIterator[str | LLMResult]:
+        """Yield pieces of text, then one LLMResult. Falls back only before the first piece."""
         started, problems = self._clock(), []
         for index, provider in enumerate(self.providers):
             breaker = self.breakers[provider.name]
@@ -345,7 +371,7 @@ class LLMGateway:
                 await self._record(
                     provider, purpose, prompt_version, status="error", error=str(exc)[:300]
                 )
-                if pieces:
+                if pieces:  # the user already saw half an answer: do not switch model silently
                     raise LLMUnavailable(f"{provider.name} failed mid-answer: {exc}") from exc
                 problems.append(f"{provider.name}: {exc}")
                 continue
