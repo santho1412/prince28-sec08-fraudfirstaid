@@ -2,7 +2,7 @@
 
 from http import HTTPStatus
 
-from fastapi import Request
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -75,4 +75,17 @@ async def validation_exception_handler(
         instance=request.url.path,
         request_id=getattr(request.state, "request_id", None),
         errors=errors,
+    )
+
+
+def register_error_handlers(app: FastAPI) -> None:
+    """Register RFC 9457 handlers for HTTP and validation errors."""
+
+    app.add_exception_handler(
+        StarletteHTTPException,
+        http_exception_handler,
+    )
+    app.add_exception_handler(
+        RequestValidationError,
+        validation_exception_handler,
     )

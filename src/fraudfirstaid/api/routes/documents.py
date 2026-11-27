@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from fraudfirstaid.api.deps import DocumentRepositoryDep
 from fraudfirstaid.db.repository import FILTER_KEY
 
-router = APIRouter(prefix="/v1/documents", tags=["documents"])
+router = APIRouter(prefix="/documents", tags=["documents"])
 
 
 @router.get("")

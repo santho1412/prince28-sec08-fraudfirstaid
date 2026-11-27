@@ -1,4 +1,4 @@
-"""Shared fixtures for API tests."""
+"""Shared fixtures for API unit tests."""
 
 from collections.abc import Iterator
 from typing import Any
@@ -8,13 +8,17 @@ from fastapi.testclient import TestClient
 from sqlalchemy.exc import SQLAlchemyError
 
 from fraudfirstaid.api.deps import (
-    get_document_repository,
+    check_db,
     get_gateway,
+    get_ingest_repo,
+    get_manifest,
+    get_queue,
+    get_repo,
+    get_session,
     get_usage_repo,
 )
 from fraudfirstaid.api.main import create_app
 from fraudfirstaid.config import Settings
-from fraudfirstaid.db.session import get_db
 from fraudfirstaid.llm.gateway import FakeLLM, LLMGateway
 
 SAMPLE_DOCUMENTS: list[dict[str, Any]] = [
@@ -113,6 +117,7 @@ def settings() -> Settings:
     return Settings(
         app_env="ci",
         database_url="postgresql://localhost:5432/unused",
+        admin_token="test-token",  # pragma: allowlist secret
         _env_file=None,
     )
 
@@ -124,20 +129,57 @@ def db_state() -> dict[str, bool]:
 
 
 @pytest.fixture
+def manifest() -> list[dict[str, Any]]:
+    """Provide an in-memory ingestion manifest."""
+    return [
+        {
+            "url": f"https://x.test/{number}.pdf",
+            "source": "x",
+            "licence": "CC BY 4.0",
+            "path": f"data/raw/x/{number}.pdf",
+            "sha256": str(number) * 64,
+            "status": "downloaded",
+        }
+        for number in (1, 2)
+    ] + [
+        {
+            "url": "https://x.test/3.pdf",
+            "source": "x",
+            "licence": "CC BY 4.0",
+            "path": "data/raw/x/3.pdf",
+            "sha256": "a" * 64,
+            "status": "downloaded",
+        },
+        {
+            "url": "https://x.test/4.pdf",
+            "source": "x",
+            "licence": "CC BY 4.0",
+            "path": "data/raw/x/4.pdf",
+            "sha256": "4" * 64,
+            "status": "failed",
+        },
+    ]
+
+
+@pytest.fixture
 def client(
     settings: Settings,
     db_state: dict[str, bool],
     llm: FakeLLM,
+    queue: Any,
+    ingest_repo: Any,
+    manifest: list[dict[str, Any]],
 ) -> Iterator[TestClient]:
     """Create an API client with fake dependencies."""
+
     app = create_app(settings)
 
-    async def override_get_db():
+    async def override_get_session():
         yield FakeDatabaseSession(
             should_fail=not db_state["available"],
         )
 
-    def override_get_document_repository() -> FakeDocumentRepository:
+    def override_get_repo() -> FakeDocumentRepository:
         return FakeDocumentRepository()
 
     def override_get_gateway() -> LLMGateway:
@@ -146,10 +188,14 @@ def client(
     def override_get_usage_repo() -> FakeUsage:
         return FakeUsage()
 
-    app.dependency_overrides[get_db] = override_get_db
-    app.dependency_overrides[get_document_repository] = override_get_document_repository
+    app.dependency_overrides[get_session] = override_get_session
+    app.dependency_overrides[get_repo] = override_get_repo
     app.dependency_overrides[get_gateway] = override_get_gateway
     app.dependency_overrides[get_usage_repo] = override_get_usage_repo
+    app.dependency_overrides[get_queue] = lambda: queue
+    app.dependency_overrides[get_ingest_repo] = lambda: ingest_repo
+    app.dependency_overrides[get_manifest] = lambda: manifest
+    app.dependency_overrides[check_db] = lambda: db_state["available"]
 
     with TestClient(app) as test_client:
         yield test_client
