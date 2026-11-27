@@ -28,6 +28,10 @@ async def get_session(request: Request) -> AsyncIterator[AsyncSession]:
         yield session
 
 
+# Backward-compatible name used by existing integration tests.
+get_db = get_session
+
+
 async def get_repo(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> DocumentRepository:
