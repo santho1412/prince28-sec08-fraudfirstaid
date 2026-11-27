@@ -890,6 +890,7 @@ Neon SQL verification:
 | classify_v2 | 19/20 | 95% | 0 | 277 |
 | classify_v3 | 19/20 | 95% | 0 | 458 |
 | classify_v4 | 20/20 | 100% | 0 | 491 |
+| classify_v5 | 19/20 | 95% | 0 | 320 |
 
 <!-- prompts:end -->
 
@@ -909,24 +910,25 @@ Neon SQL verification:
 
 ### D09 · Prompts and structured output
 
-- My best router prompt: classify_v__ with ___ / 20
-- What I changed in v4, and what happened to the score:
-- The question my best version still gets wrong (line, wanted, got), and why I think so:
-- A label in my test set that I changed after seeing the results (or "none"):
-- Input tokens per question: v1 ___ , best version ___ . Is the extra accuracy worth it?
-
+- My best router prompt: classify_v4 with 20 / 20 (100%).
+- What I changed in v4, and what happened to the score: Added an explicit rule that questions combining general RBI policy with a request about the user's own fraud case are classified as personal. Accuracy improved from 19/20 in v3 to 20/20 in v4.
+- The question my best version still gets wrong (line, wanted, got), and why I think so: None. classify_v4 correctly classified all 20 test questions.
+- A label in my test set that I changed after seeing the results: None recorded.
+- Input tokens per question: v1 48, best version 491. The extra accuracy is worth it for a safety-critical fraud-support router, although the token cost is significantly higher.
 ### My contract (DocMeta)
 
-- Fields I kept from my project card:
-- Fields I deleted, and why they make no sense per document:
-- The field I tightened, and how:
+- Fields I kept from my project card: doc_kind, year, language, summary, topics, issuer, number, date, scam_type and deadline_days. These support document classification, search and fraud-specific filtering.
+- Fields I deleted, and why they make no sense per document: No additional project-card fields were retained in the final schema. Document-specific fields are kept only when useful across individual documents.
+- The field I tightened, and how: doc_kind uses a fixed Literal list; language is restricted to en, ta, hi or other; summary is limited to 20–300 characters; topics require 1–6 entries; custom value lists are limited to 8 entries, with each string limited to 80 characters. Extra fields are forbidden.
 
 ### Extraction run
 
-- Prompt version: extract_v__ · documents: ___ ok, ___ repaired, ___ failed (of ___ parsed)
-- Not finished? Why, and how many are left:
-- Most common failure reason, and what I did about it:
-- A record that was valid but wrong (document, field, what it said, what is true):
-- Cost at list price: Rs ___ in total, Rs ___ per document
+- Prompt version: extract_v2 · documents: 70 ok, 4 repaired, 0 failed (of 75 parsed)
+- Not finished? Why, and how many are left: Finished; 0 remaining.
+- Most common failure reason, and what I did about it: No failed documents.
+- A record that was valid but wrong (document, field, what it said, what is true): No confirmed example recorded.
+- Cost at list price: Rs 6.5334 in total, Rs 0.0933 per document.
 
 ### One thing that went wrong today, and how I fixed it
+
+- Manual verification: checked 5 extract_v2 records against their official sources. Summaries and classifications were broadly accurate, but publication dates were missed in 4 of 5 records. Issuer extraction also needs review.
