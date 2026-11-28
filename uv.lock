@@ -521,7 +521,6 @@ ingestion = [
     { name = "boto3" },
     { name = "httpx" },
     { name = "protego" },
-    { name = "pymupdf" },
     { name = "pypdf" },
     { name = "trafilatura" },
 ]
@@ -553,7 +552,6 @@ ingestion = [
     { name = "boto3", specifier = ">=1.44.10" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "protego", specifier = ">=0.7.0" },
-    { name = "pymupdf", specifier = ">=1.26,<2" },
     { name = "pypdf", specifier = ">=7.1.1" },
     { name = "trafilatura", specifier = ">=2.4.0" },
 ]

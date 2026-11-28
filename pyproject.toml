@@ -36,7 +36,6 @@ ingestion = [
     "boto3>=1.44.10",
     "httpx>=0.28.1",
     "protego>=0.7.0",
-    "pymupdf>=1.26,<2",
     "pypdf>=7.1.1",
     "trafilatura>=2.4.0",
 ]
