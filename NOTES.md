@@ -941,11 +941,11 @@ Neon SQL verification:
 
 ### Kill test
 
-- Queued: 20. At the kill: queued ___ , running ___ , done ___ , failed ___
-- After the new worker: done ___ + skipped ___ + failed ___ = ___ (must be 20)
-- Documents in the database: ___ , different ids: ___ (must be equal)
-- The interrupted items came back after ___ s. Why that long:
-- Why nothing was doubled (one sentence, in my own words):
+- Queued: 20. At the kill: queued 8, running 2, done 10, failed 0.
+- After the new worker: done 20 + skipped 0 + failed 0 = 20 (must be 20)
+- Documents in the database: 60, different ids: 60 (must be equal)
+- The interrupted items came back after the ARQ visibility timeout. Exact elapsed seconds were not recorded.
+- Why nothing was doubled (one sentence, in my own words): The ingestion process uses document IDs to avoid inserting duplicate documents when jobs are retried.
 
 ### Dead-letter list
 
