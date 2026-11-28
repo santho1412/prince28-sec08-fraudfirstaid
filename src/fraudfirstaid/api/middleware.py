@@ -57,3 +57,26 @@ class RequestContextMiddleware:
                     ),
                 },
             )
+
+
+async def request_context(request, call_next):
+    """Attach request ID and timing headers to the response."""
+    request_id = request.headers.get("x-request-id") or uuid.uuid4().hex
+    request.state.request_id = request_id
+    start_time = time.perf_counter()
+
+    try:
+        response = await call_next(request)
+    finally:
+        duration = time.perf_counter() - start_time
+        logger.info(
+            "request completed",
+            extra={
+                "request_id": request_id,
+                "duration_seconds": round(duration, 6),
+            },
+        )
+
+    response.headers["X-Request-ID"] = request_id
+    response.headers["X-Process-Time"] = f"{duration:.6f}"
+    return response
